@@ -1,0 +1,3 @@
+useDynLib(yakmoR)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
