@@ -7,8 +7,9 @@
 #'  @param	k		number of clusters
 #'  @param	verbose		verbose output?
 #'
-#'
-kmeans <- function(X, k, verbose = FALSE) {
-    .Call('yakmoR_kmeans', PACKAGE = 'yakmoR', X, k, verbose)
+NULL
+
+KMeans <- function(X, k = 3L, iter = 100L, verbose = FALSE) {
+    .Call('yakmoR_KMeans', PACKAGE = 'yakmoR', X, k, iter, verbose)
 }
 

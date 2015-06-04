@@ -5,16 +5,17 @@
 
 using namespace Rcpp;
 
-// kmeans
-List kmeans(NumericMatrix X, unsigned int k, bool verbose);
-RcppExport SEXP yakmoR_kmeans(SEXP XSEXP, SEXP kSEXP, SEXP verboseSEXP) {
+// KMeans
+List KMeans(NumericMatrix X, unsigned int k, unsigned int iter, bool verbose);
+RcppExport SEXP yakmoR_KMeans(SEXP XSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    __result = Rcpp::wrap(kmeans(X, k, verbose));
+    __result = Rcpp::wrap(KMeans(X, k, iter, verbose));
     return __result;
 END_RCPP
 }
