@@ -9,7 +9,7 @@
 #'
 NULL
 
-KMeans <- function(X, k = 3L, iter = 100L, verbose = FALSE) {
-    .Call('yakmoR_KMeans', PACKAGE = 'yakmoR', X, k, iter, verbose)
+KMeans <- function(X, k = 3L, iter = 100L, m = 1L, verbose = FALSE) {
+    .Call('yakmoR_KMeans', PACKAGE = 'yakmoR', X, k, iter, m, verbose)
 }
 

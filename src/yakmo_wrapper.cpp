@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <string.h>
+#include <iomanip>
 #include <Rcpp.h>
 
 #include "yakmo.h"
@@ -43,8 +44,10 @@ using namespace yakmo;
 //'
 
 // [[Rcpp::export]]
-List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, bool verbose = false ) {
-
+List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsigned int m = 1, bool verbose = false ) {
+	// temp stringstream
+	stringstream tmpS;
+	
 	// initalize the options
 	
 	// convert to data structure
@@ -56,14 +59,16 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, bool v
 	if (verbose == true) {
 		Rcout << "Parameters:\n";
 		Rcout<<"\tk: \t\t" << k << "\n";
-// 		Rcout<<"\tgamma: \t\t" << gamma << "\n";
-// 		Rcout<<"\teps: \t\t" << epsilon << "\n";
+ 		Rcout<<"\titerations: \t" << iter<< "\n";
+		Rcout<<"\tm: \t\t" << m << "\n";
 	}
 	
 	// create a new opt structure here
 	yakmo::option opt (0, NULL);
-	yakmo::orthogonal_kmeans* m = new yakmo::orthogonal_kmeans (opt);
+	//yakmo::orthogonal_kmeans* m = new yakmo::orthogonal_kmeans (opt);
 	opt.k = k;
+	opt.iter = iter;
+	opt.m = m;
 	/*
 	dist_t   dist;  // dist-type
 	init_t   init;  //
@@ -86,19 +91,44 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, bool v
 	}
 	
 	// convert to std::vector probably stupid, but for now its ok
-	unsigned int examples = X.rows();
-	for (size_t e = 0; e < examples; e++) {
-		NumericMatrix::Row zzrow = X (e, _);
-		std::vector<double> tmp (zzrow.begin(), zzrow.end());
-		inputs.push_back(tmp);
-	}
+// 	unsigned int examples = X.rows();
+// 	for (size_t e = 0; e < examples; e++) {
+// 		NumericMatrix::Row zzrow = X (e, _);
+// 		std::vector<double> tmp (zzrow.begin(), zzrow.end());
+// 		inputs.push_back(tmp);
+// 	}
 
+	// container for all the kmeans
 	std::vector <kmeans*> _kms;
+	
+	// fill  current kmean object with data
 	kmeans* km = new kmeans (opt);
+	// TODO: actually, we would rather not convert, but then we need to change yakmo
+	// and for now i do not want that.
+	
+	for (size_t e = 0; e < X.rows(); e++) {
+		tmpS.str(std::string());
+		
+		for (size_t j = 0; j < X.cols(); j++) {
+			tmpS << j << ":" << std::setprecision(16) << X (e, j);
+				tmpS << " ";
+		}
+		// get size (dont need to replay)
+		int size = tmpS.str().length();
+		
+		char *cstr = new char [tmpS.str().length()+1];
+		std::strcpy (cstr, tmpS.str().c_str());
+		
+		char *ex(cstr);
+		char *ex_end (cstr + tmpS.str().length() );
+		km->set_point (ex, ex_end, opt.normalize);
+	}
+	
+	// add it to our vector
 	_kms.push_back (km);
-
-	for (uint i = 1; i <= opt.iter; ++i) {
-		Rcout << "iteration " << i << "\n";
+	
+	for (uint i = 1; i <= opt.m; ++i) {
+		if (verbose) Rcout << "kmeans #" << i << "\n";
 		if (i >= 2) {
 			kmeans* km_ = _kms.back (); // last of mohikans
 			// project
@@ -110,9 +140,23 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, bool v
 		}
 		km->run ();
 	}
+
+	// create model
+	
+	for (uint i = 0; i < _kms.size (); ++i) {
+		const std::vector <kmeans::centroid_t>& centroid = _kms[i]->centroid ();
+		for (uint j = 0; j < centroid.size (); ++j) {
+			//if (opt.m == 1)
+				//std::fprintf (fp, "c");
+			//else
+				//std::fprintf (fp, "c%d_", i);
+			//centroid[j].print (fp, j);
+		}
+	}
+	
 	
 	// dummy
-	Rcpp::List rl = Rcpp::List::create (Rcpp::Named ("X", X) );
+	Rcpp::List rl = Rcpp::List::create (Rcpp::Named ("X", X), Rcpp::Named ("d", _kms.back()->nf()) );
 	return (rl);
 }
 
