@@ -36,6 +36,7 @@ using namespace Rcpp;
 using namespace yakmo;
 
 
+
 //'  kmeans using yakmo
 //' 
 //'  @param	X		data matrix 
@@ -49,13 +50,6 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	stringstream tmpS;
 	
 	// initalize the options
-	
-	// convert to data structure
-	
-	
-	if (verbose) Rcout << "Converting data.. " << std::endl;
-	std::vector<std::vector <double> > inputs;
-	
 	if (verbose == true) {
 		Rcout << "Parameters:\n";
 		Rcout<<"\tk: \t\t" << k << "\n";
@@ -65,23 +59,23 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	
 	// create a new opt structure here
 	yakmo::option opt (0, NULL);
-	//yakmo::orthogonal_kmeans* m = new yakmo::orthogonal_kmeans (opt);
 	opt.k = k;
 	opt.iter = iter;
 	opt.m = m;
+	
+	if (verbose == true) 
+		opt.verbosity = 1;
 	/*
 	dist_t   dist;  // dist-type
 	init_t   init;  //
-	mutable uint  k;
-	mutable uint  m;
-	uint     iter;
 	bool     random;
 	bool     normalize;
 	uint16_t output;
-	uint     verbosity;
 	mode_t   mode;
 	option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), 
 	*/
+
+	//yakmo::orthogonal_kmeans* m = new yakmo::orthogonal_kmeans (opt);
 	
 	// first do a check for k and number of rows
 	if (X.rows() <= opt.k) {
@@ -90,22 +84,14 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		Rcpp::stop(s.str().c_str());
 	}
 	
-	// convert to std::vector probably stupid, but for now its ok
-// 	unsigned int examples = X.rows();
-// 	for (size_t e = 0; e < examples; e++) {
-// 		NumericMatrix::Row zzrow = X (e, _);
-// 		std::vector<double> tmp (zzrow.begin(), zzrow.end());
-// 		inputs.push_back(tmp);
-// 	}
-
 	// container for all the kmeans
 	std::vector <kmeans*> _kms;
 	
 	// fill  current kmean object with data
 	kmeans* km = new kmeans (opt);
+
 	// TODO: actually, we would rather not convert, but then we need to change yakmo
 	// and for now i do not want that.
-	
 	for (size_t e = 0; e < X.rows(); e++) {
 		tmpS.str(std::string());
 		
@@ -136,27 +122,37 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 			for (std::vector <kmeans::point_t>::iterator it = point_.begin ();
 				 it != point_.end (); ++it)
 				 it->project (km_->centroid ()[it->id]);
-			km_->clear_centroid ();
+
+			km = new kmeans (opt);
+			km_->delegate (km);
+			km_->compress ();
+			_kms.push_back (km);
+			//	km_->clear_centroid ();
 		}
 		km->run ();
 	}
 
 	// create model
+	_kms.back ()->compress ();
+	_kms.back ()->clear_point ();
 	
+
+	Rcpp::List models;
 	for (uint i = 0; i < _kms.size (); ++i) {
 		const std::vector <kmeans::centroid_t>& centroid = _kms[i]->centroid ();
+		NumericMatrix cc (centroid.size (), X.cols());
 		for (uint j = 0; j < centroid.size (); ++j) {
-			//if (opt.m == 1)
-				//std::fprintf (fp, "c");
-			//else
-				//std::fprintf (fp, "c%d_", i);
-			//centroid[j].print (fp, j);
+			NumericVector tmpN(X.rows());
+			tmpN = centroid[j].print();
+			cc (j, _) = tmpN;
 		}
+		tmpS.str("");
+		tmpS << i;
+		models[tmpS.str()] = cc;
 	}
 	
-	
 	// dummy
-	Rcpp::List rl = Rcpp::List::create (Rcpp::Named ("X", X), Rcpp::Named ("d", _kms.back()->nf()) );
+	Rcpp::List rl = Rcpp::List::create (Rcpp::Named ("model", models), Rcpp::Named ("d", _kms.back()->nf()) );
 	return (rl);
 }
 

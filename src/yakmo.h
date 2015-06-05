@@ -355,7 +355,16 @@ namespace yakmo
           std::fprintf (fp, " %d:%.16g", _body[i].idx, _body[i].val);
         std::fprintf (fp, "\n");
       }
-      fl_t norm  () const { return _norm; }
+      /// --- 
+      std::vector<double> print () const {
+		std::vector<fl_t> r (_size);
+		for (uint i = 0; i < _size; ++i) {
+			r[_body[i].idx] = _body[i].val;
+		}
+		return (r);
+	  }
+	  /// ---
+	  fl_t norm  () const { return _norm; }
       void clear () {
         if (_dv)   delete [] _dv;
         if (_sum)  delete [] _sum;
