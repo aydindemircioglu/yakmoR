@@ -112,6 +112,9 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	
 	// add it to our vector
 	_kms.push_back (km);
+
+	// return values
+	Rcpp::NumericVector obj (opt.m);
 	
 	for (uint i = 1; i <= opt.m; ++i) {
 		if (verbose) Rcout << "kmeans #" << i << "\n";
@@ -130,13 +133,15 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 			//	km_->clear_centroid ();
 		}
 		km->run ();
+		obj[i-1] = km -> getObj();
 	}
 
-	// create model
+	// create model FIXME?
 	_kms.back ()->compress ();
 	_kms.back ()->clear_point ();
 	
 
+	// get back centroids
 	Rcpp::List models;
 	for (uint i = 0; i < _kms.size (); ++i) {
 		const std::vector <kmeans::centroid_t>& centroid = _kms[i]->centroid ();
@@ -151,8 +156,11 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		models[tmpS.str()] = cc;
 	}
 	
-	// dummy
-	Rcpp::List rl = Rcpp::List::create (Rcpp::Named ("model", models), Rcpp::Named ("d", _kms.back()->nf()) );
+	// return list
+	Rcpp::List rl = Rcpp::List::create (
+		Rcpp::Named ("model", models),
+		Rcpp::Named ("obj", obj), 
+		Rcpp::Named ("d", _kms.back()->nf()) );
 	return (rl);
 }
 
