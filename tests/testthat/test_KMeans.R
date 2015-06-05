@@ -18,5 +18,6 @@ test_that("KMeans works as expected on synthetical dataset", {
 	expect_equal (E$obj[1], 13461.88738081)
 	expect_equal (E$obj[2], 5990.19781146)
 
+	print(E)
 })
 

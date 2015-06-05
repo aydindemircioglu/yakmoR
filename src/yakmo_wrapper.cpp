@@ -108,6 +108,7 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		char *ex(cstr);
 		char *ex_end (cstr + tmpS.str().length() );
 		km->set_point (ex, ex_end, opt.normalize);
+		delete[] cstr;
 	}
 	
 	// add it to our vector
@@ -138,7 +139,7 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 
 	// create model FIXME?
 	_kms.back ()->compress ();
-	_kms.back ()->clear_point ();
+//	_kms.back ()->clear_point ();
 	
 
 	// get back centroids
@@ -156,8 +157,30 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		models[tmpS.str()] = cc;
 	}
 	
+
+	// create labels for training set 
+	// (TODO: extract as some kind of prediction function?)
+
+
+	// FIXME: TAKE LAST MODEL s output for cluster/centers, add all cluster predcitions to model
+	NumericVector cluster (X.rows());
+	std::vector<kmeans::point_t> &pts = _kms.back() -> point();
+	for (uint i = 0; i < _kms.size (); ++i) {
+		kmeans* km =_kms[i];
+		km->decompress ();
+		for (uint j = 0; j < pts.size (); ++j) {
+			kmeans::point_t& p = pts[j];
+			p.set_closest (km->centroid (), opt.dist);
+			cluster[j] = p.id;
+//			p.project (km->centroid ()[p.id]); //????
+		}
+	}
+	
+	
 	// return list
 	Rcpp::List rl = Rcpp::List::create (
+		Rcpp::Named ("centers", models["0"]),
+		Rcpp::Named ("cluster", cluster),
 		Rcpp::Named ("model", models),
 		Rcpp::Named ("obj", obj), 
 		Rcpp::Named ("d", _kms.back()->nf()) );
