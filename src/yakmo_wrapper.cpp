@@ -37,15 +37,27 @@ using namespace yakmo;
 
 
 
-//'  kmeans using yakmo
+//'  K-Means using yakmo library
 //' 
 //'  @param	X		data matrix 
 //'  @param	k		number of clusters
+//'  @param	iter	numer of iterations in one round
+//'  @param	m		number of rounds
 //'  @param	verbose		verbose output?
+//'  @param	allmodels	save all models of each round?
 //'
-
+//'  @return	a list consisting of
+//'	centers	these are the resulting centroids of the kmean algorithm
+//'	cluster 	these are the labels for the resulting clustering
+//'	obj			this is a vector with the final objective value for each round
+//'	dim			dimension of the input space (=dim of centroids)
+//'	allcenters	this is the list of centroids, one matrix of centroids for each round
+//'	allcluster		this is the list of labels, one vector for each round
+//'
+// (TODO: extract as some kind of prediction function?)
+//
 // [[Rcpp::export]]
-List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsigned int m = 1, bool verbose = false ) {
+List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsigned int m = 1, bool verbose = false, bool allmodels = false ) {
 	// temp stringstream
 	stringstream tmpS;
 	
@@ -74,7 +86,7 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	mode_t   mode;
 	option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), 
 	*/
-
+	
 	//yakmo::orthogonal_kmeans* m = new yakmo::orthogonal_kmeans (opt);
 	
 	// first do a check for k and number of rows
@@ -90,6 +102,9 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	// fill  current kmean object with data
 	kmeans* km = new kmeans (opt);
 
+	kmeans* shadow = new kmeans (opt);
+	
+	
 	// TODO: actually, we would rather not convert, but then we need to change yakmo
 	// and for now i do not want that.
 	for (size_t e = 0; e < X.rows(); e++) {
@@ -108,12 +123,19 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		char *ex(cstr);
 		char *ex_end (cstr + tmpS.str().length() );
 		km->set_point (ex, ex_end, opt.normalize);
+
+		// just a container to the raw dataset we use below there
+		// TODO: if we have an extra predict function, maybe
+		// we do not need this here?
+		shadow->set_point (ex, ex_end, opt.normalize);
+		
 		delete[] cstr;
 	}
 	
 	// add it to our vector
 	_kms.push_back (km);
-
+	
+	
 	// return values
 	Rcpp::NumericVector obj (opt.m);
 	
@@ -137,53 +159,86 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		obj[i-1] = km -> getObj();
 	}
 
-	// create model FIXME?
 	_kms.back ()->compress ();
-//	_kms.back ()->clear_point ();
+	// _kms.back ()->clear_point ();
 	
+	// do we want to save all intermediate models?
+	Rcpp::List allcluster;
+	Rcpp::List allcenters;
 
-	// get back centroids
-	Rcpp::List models;
-	for (uint i = 0; i < _kms.size (); ++i) {
-		const std::vector <kmeans::centroid_t>& centroid = _kms[i]->centroid ();
-		NumericMatrix cc (centroid.size (), X.cols());
+	// extract clusters
+	NumericMatrix centers (opt.k, X.cols());
+	if (allmodels == true) {
+		// get back centroids
+		for (uint i = 0; i < _kms.size (); ++i) {
+			const std::vector <kmeans::centroid_t>& centroid = _kms[i]->centroid ();
+			NumericMatrix cc (centroid.size (), X.cols());
+			for (uint j = 0; j < centroid.size (); ++j) {
+				NumericVector tmpN(X.rows());
+				tmpN = centroid[j].print();
+				cc (j, _) = tmpN;
+			}
+			tmpS.str("");
+			tmpS << i;
+			allcenters[tmpS.str()] = cc;
+			// last centroids will be copied over
+			if (i == _kms.size() - 1) {
+				centers = cc;
+			}
+		}
+	} else {
+		const std::vector <kmeans::centroid_t>& centroid = _kms.back()->centroid ();
 		for (uint j = 0; j < centroid.size (); ++j) {
 			NumericVector tmpN(X.rows());
 			tmpN = centroid[j].print();
-			cc (j, _) = tmpN;
+			centers (j, _) = tmpN;
 		}
-		tmpS.str("");
-		tmpS << i;
-		models[tmpS.str()] = cc;
 	}
+
 	
-
+	
 	// create labels for training set 
-	// (TODO: extract as some kind of prediction function?)
-
-
-	// FIXME: TAKE LAST MODEL s output for cluster/centers, add all cluster predcitions to model
 	NumericVector cluster (X.rows());
-	std::vector<kmeans::point_t> &pts = _kms.back() -> point();
+	
+	// we need to go through all models even if user only wants
+	// the last one as we somehow change the dataset?
+
+	// get back centroids
+	std::vector<kmeans::point_t> &pts = shadow -> point();
 	for (uint i = 0; i < _kms.size (); ++i) {
 		kmeans* km =_kms[i];
+		
 		km->decompress ();
+		NumericVector cc (X.rows());
+		
 		for (uint j = 0; j < pts.size (); ++j) {
-			kmeans::point_t& p = pts[j];
+			kmeans::point_t p = pts[j];
+			p.shrink (km->nf ());
 			p.set_closest (km->centroid (), opt.dist);
-			cluster[j] = p.id;
-//			p.project (km->centroid ()[p.id]); //????
+			cc[j] = p.id;
+			p.project (km->centroid ()[p.id]);
+		} 
+		tmpS.str("");
+		tmpS << i;
+		allcluster[tmpS.str()] = cc;
+		// last centroids will be copied over
+		if (i == _kms.size() - 1) {
+			cluster = cc;
 		}
 	}
-	
-	
+
 	// return list
 	Rcpp::List rl = Rcpp::List::create (
-		Rcpp::Named ("centers", models["0"]),
+		Rcpp::Named ("centers", centers),
 		Rcpp::Named ("cluster", cluster),
-		Rcpp::Named ("model", models),
 		Rcpp::Named ("obj", obj), 
-		Rcpp::Named ("d", _kms.back()->nf()) );
+		Rcpp::Named ("dim", _kms.back()->nf()) );
+	
+	if (allmodels == true) {
+		rl["allcenters"] = allcenters;
+		rl["allcluster"] = allcluster;
+	}
+	
 	return (rl);
 }
 

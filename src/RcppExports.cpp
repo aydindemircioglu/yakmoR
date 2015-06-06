@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // KMeans
-List KMeans(NumericMatrix X, unsigned int k, unsigned int iter, unsigned int m, bool verbose);
-RcppExport SEXP yakmoR_KMeans(SEXP XSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP mSEXP, SEXP verboseSEXP) {
+List KMeans(NumericMatrix X, unsigned int k, unsigned int iter, unsigned int m, bool verbose, bool allmodels);
+RcppExport SEXP yakmoR_KMeans(SEXP XSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP mSEXP, SEXP verboseSEXP, SEXP allmodelsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -16,7 +16,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    __result = Rcpp::wrap(KMeans(X, k, iter, m, verbose));
+    Rcpp::traits::input_parameter< bool >::type allmodels(allmodelsSEXP);
+    __result = Rcpp::wrap(KMeans(X, k, iter, m, verbose, allmodels));
     return __result;
 END_RCPP
 }
