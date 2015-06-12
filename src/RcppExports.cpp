@@ -6,18 +6,33 @@
 using namespace Rcpp;
 
 // KMeans
-List KMeans(NumericMatrix X, unsigned int k, unsigned int iter, unsigned int m, bool verbose, bool allmodels);
-RcppExport SEXP yakmoR_KMeans(SEXP XSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP mSEXP, SEXP verboseSEXP, SEXP allmodelsSEXP) {
+List KMeans(NumericMatrix x, unsigned int k, unsigned int iter, unsigned int m, bool verbose, bool allmodels);
+RcppExport SEXP yakmoR_KMeans(SEXP xSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP mSEXP, SEXP verboseSEXP, SEXP allmodelsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< bool >::type allmodels(allmodelsSEXP);
-    __result = Rcpp::wrap(KMeans(X, k, iter, m, verbose, allmodels));
+    __result = Rcpp::wrap(KMeans(x, k, iter, m, verbose, allmodels));
+    return __result;
+END_RCPP
+}
+// KMeansPredict
+List KMeansPredict(NumericMatrix x, std::vector <NumericMatrix> centers, int k, bool verbose, bool allmodels);
+RcppExport SEXP yakmoR_KMeansPredict(SEXP xSEXP, SEXP centersSEXP, SEXP kSEXP, SEXP verboseSEXP, SEXP allmodelsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::vector <NumericMatrix> >::type centers(centersSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< bool >::type allmodels(allmodelsSEXP);
+    __result = Rcpp::wrap(KMeansPredict(x, centers, k, verbose, allmodels));
     return __result;
 END_RCPP
 }

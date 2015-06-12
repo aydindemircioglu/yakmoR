@@ -49,6 +49,6 @@ yakmoREnv = new.env(parent = emptyenv())
 
 
 .onAttach <- function (libname, pkgname) {
-	packageStartupMessage("yakmoR v0.1 loaded.")
+	packageStartupMessage("yakmoR loaded.")
 }
 

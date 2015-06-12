@@ -39,7 +39,7 @@ using namespace yakmo;
 
 //'  K-Means using yakmo library
 //' 
-//'  @param	X		data matrix 
+//'  @param	x		data matrix 
 //'  @param	k		number of clusters
 //'  @param	iter	numer of iterations in one round
 //'  @param	m		number of rounds
@@ -57,7 +57,7 @@ using namespace yakmo;
 // (TODO: extract as some kind of prediction function?)
 //
 // [[Rcpp::export]]
-List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsigned int m = 1, bool verbose = false, bool allmodels = false ) {
+List KMeans(NumericMatrix x, unsigned int k = 3, unsigned int iter = 100, unsigned int m = 1, bool verbose = false, bool allmodels = false ) {
 	// temp stringstream
 	stringstream tmpS;
 	
@@ -90,9 +90,9 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	//yakmo::orthogonal_kmeans* m = new yakmo::orthogonal_kmeans (opt);
 	
 	// first do a check for k and number of rows
-	if (X.rows() <= opt.k) {
+	if (x.rows() <= opt.k) {
 		stringstream s;
-		s << "Not enough data points (obtained " << X.rows() << ") to create " << k << "clusters!\n"; 
+		s << "Not enough data points (obtained " << x.rows() << ") to create " << k << "clusters!\n"; 
 		Rcpp::stop(s.str().c_str());
 	}
 	
@@ -107,11 +107,11 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	
 	// TODO: actually, we would rather not convert, but then we need to change yakmo
 	// and for now i do not want that.
-	for (size_t e = 0; e < X.rows(); e++) {
+	for (size_t e = 0; e < x.rows(); e++) {
 		tmpS.str(std::string());
 		
-		for (size_t j = 0; j < X.cols(); j++) {
-			tmpS << j << ":" << std::setprecision(16) << X (e, j);
+		for (size_t j = 0; j < x.cols(); j++) {
+			tmpS << j << ":" << std::setprecision(16) << x (e, j);
 				tmpS << " ";
 		}
 		// get size (dont need to replay)
@@ -167,14 +167,14 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	Rcpp::List allcenters;
 
 	// extract clusters
-	NumericMatrix centers (opt.k, X.cols());
+	NumericMatrix centers (opt.k, x.cols());
 	if (allmodels == true) {
 		// get back centroids
 		for (uint i = 0; i < _kms.size (); ++i) {
 			const std::vector <kmeans::centroid_t>& centroid = _kms[i]->centroid ();
-			NumericMatrix cc (centroid.size (), X.cols());
+			NumericMatrix cc (centroid.size (), x.cols());
 			for (uint j = 0; j < centroid.size (); ++j) {
-				NumericVector tmpN(X.rows());
+				NumericVector tmpN(x.rows());
 				tmpN = centroid[j].print();
 				cc (j, _) = tmpN;
 			}
@@ -189,7 +189,7 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	} else {
 		const std::vector <kmeans::centroid_t>& centroid = _kms.back()->centroid ();
 		for (uint j = 0; j < centroid.size (); ++j) {
-			NumericVector tmpN(X.rows());
+			NumericVector tmpN(x.rows());
 			tmpN = centroid[j].print();
 			centers (j, _) = tmpN;
 		}
@@ -198,7 +198,7 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 	
 	
 	// create labels for training set 
-	NumericVector cluster (X.rows());
+	NumericVector cluster (x.rows());
 	
 	// we need to go through all models even if user only wants
 	// the last one as we somehow change the dataset?
@@ -209,7 +209,7 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		kmeans* km =_kms[i];
 		
 		km->decompress ();
-		NumericVector cc (X.rows());
+		NumericVector cc (x.rows());
 		
 		for (uint j = 0; j < pts.size (); ++j) {
 			kmeans::point_t p = pts[j];
@@ -238,6 +238,167 @@ List KMeans(NumericMatrix X, unsigned int k = 3, unsigned int iter = 100, unsign
 		rl["allcenters"] = allcenters;
 		rl["allcluster"] = allcluster;
 	}
+		
+	return (rl);
+}
+
+
+
+
+
+//'  K-Means using yakmo library
+//' 
+//'  @param	x		data matrix 
+//'  @param	k		number of clusters
+//'  @param	iter	numer of iterations in one round
+//'  @param	m		number of rounds
+//'  @param	verbose		verbose output?
+//'  @param	allmodels	save all models of each round?
+//'
+//'  @return	a list consisting of
+//'	centers	these are the resulting centroids of the kmean algorithm
+//'	cluster 	these are the labels for the resulting clustering
+//'	obj			this is a vector with the final objective value for each round
+//'	dim			dimension of the input space (=dim of centroids)
+//'	allcenters	this is the list of centroids, one matrix of centroids for each round
+//'	allcluster		this is the list of labels, one vector for each round
+//'
+// (TODO: extract as some kind of prediction function?)
+//
+// [[Rcpp::export]]
+List KMeansPredict(NumericMatrix x, 
+				   std::vector <NumericMatrix> centers,
+				   int k, 
+				   bool verbose = false, bool allmodels = false ) {
+	
+	// the algorithm needs the following three variables
+	// m, k, nf
+	// we do not need m as we know the number of models in the list
+	
+	// create an option object
+	yakmo::option opt (0, NULL);
+	opt.k = k;
+	opt.m = centers.size();
+
+	if (verbose == true) {
+		Rcout << "Parameters:\n";
+		Rcout<<"\tk: \t\t" << k << "\n";
+	}
+	
+	
+	// temp stringstream
+	stringstream tmpS;
+	
+	kmeans* shadow = new kmeans (opt);
+
+	
+	// container for all the kmeans
+	std::vector <kmeans*> _kms;
+	
+	
+	std::vector <kmeans::node_t> body;
+	for (uint i = 0; i < opt.m; ++i) {
+		// create a new kmeans object
+		kmeans* km = new kmeans (opt);
+//		km->nf () = nf;
+// FIXME
+		// TODO: actually, we would rather not convert, but then we need to change yakmo
+		// and for now i do not want that.
+		
+		for (size_t e = 0; e < centers[i].rows(); e++) {
+			tmpS.str(std::string());
+			
+			for (size_t j = 0; j < x.cols(); j++) {
+				tmpS << j << ":" << std::setprecision(16) << x (e, j);
+				tmpS << " ";
+			}
+			// get size (dont need to replay)
+			int size = tmpS.str().length();
+			
+			char *cstr = new char [tmpS.str().length()+1];
+			std::strcpy (cstr, tmpS.str().c_str());
+			
+			char *ex(cstr);
+			char *ex_end (cstr + tmpS.str().length() );
+			kmeans::point_t p = kmeans::read_point (ex, ex_end, body, opt.normalize);
+			km->push_centroid (p, true); // delegated
+			
+			delete[] cstr;
+		}
+		
+		_kms.push_back (km);
+	}
+
+	
+	// now the same thing for the test data
+	
+	
+	// TODO: actually, we would rather not convert, but then we need to change yakmo
+	// and for now i do not want that.
+	for (size_t e = 0; e < x.rows(); e++) {
+		tmpS.str(std::string());
+		
+		for (size_t j = 0; j < x.cols(); j++) {
+			tmpS << j << ":" << std::setprecision(16) << x (e, j);
+			tmpS << " ";
+		}
+		// get size (dont need to replay)
+		int size = tmpS.str().length();
+		
+		char *cstr = new char [tmpS.str().length()+1];
+		std::strcpy (cstr, tmpS.str().c_str());
+		
+		char *ex(cstr);
+		char *ex_end (cstr + tmpS.str().length() );
+		_kms.front()->set_point (ex, ex_end, opt.normalize);
+		shadow->set_point (ex, ex_end, opt.normalize);
+		
+		delete[] cstr;
+	}
+	
+		
+//	_kms.back ()->compress ();
+	// _kms.back ()->clear_point ();
+	
+	
+	// do we want to save all intermediate models?
+	Rcpp::List allcluster;
+	Rcpp::List allcenters;
+	
+	
+	// create labels for training set 
+	NumericVector cluster (x.rows());
+	
+	// we need to go through all models even if user only wants
+	// the last one as we somehow change the dataset?
+	
+	// get back centroids
+	std::vector<kmeans::point_t> &pts = shadow -> point();
+	for (uint i = 0; i < _kms.size (); ++i) {
+		kmeans* km =_kms[i];
+		
+		km->decompress ();
+		NumericVector cc (x.rows());
+		
+		for (uint j = 0; j < pts.size (); ++j) {
+			kmeans::point_t p = pts[j];
+			p.shrink (km->nf ());
+			p.set_closest (km->centroid (), opt.dist);
+			cc[j] = p.id;
+			p.project (km->centroid ()[p.id]);
+		} 
+		tmpS.str("");
+		tmpS << i;
+		allcluster[tmpS.str()] = cc;
+		// last centroids will be copied over
+		if (i == _kms.size() - 1) {
+			cluster = cc;
+		}
+	}
+	
+	// return list
+	Rcpp::List rl = Rcpp::List::create ();
+	rl["allcluster"] = allcluster;
 	
 	return (rl);
 }

@@ -3,7 +3,7 @@
 
 #'  K-Means using yakmo library
 #' 
-#'  @param	X		data matrix 
+#'  @param	x		data matrix 
 #'  @param	k		number of clusters
 #'  @param	iter	numer of iterations in one round
 #'  @param	m		number of rounds
@@ -20,7 +20,30 @@
 #'
 NULL
 
-KMeans <- function(X, k = 3L, iter = 100L, m = 1L, verbose = FALSE, allmodels = FALSE) {
-    .Call('yakmoR_KMeans', PACKAGE = 'yakmoR', X, k, iter, m, verbose, allmodels)
+#'  K-Means using yakmo library
+#' 
+#'  @param	x		data matrix 
+#'  @param	k		number of clusters
+#'  @param	iter	numer of iterations in one round
+#'  @param	m		number of rounds
+#'  @param	verbose		verbose output?
+#'  @param	allmodels	save all models of each round?
+#'
+#'  @return	a list consisting of
+#'	centers	these are the resulting centroids of the kmean algorithm
+#'	cluster 	these are the labels for the resulting clustering
+#'	obj			this is a vector with the final objective value for each round
+#'	dim			dimension of the input space (=dim of centroids)
+#'	allcenters	this is the list of centroids, one matrix of centroids for each round
+#'	allcluster		this is the list of labels, one vector for each round
+#'
+NULL
+
+KMeans <- function(x, k = 3L, iter = 100L, m = 1L, verbose = FALSE, allmodels = FALSE) {
+    .Call('yakmoR_KMeans', PACKAGE = 'yakmoR', x, k, iter, m, verbose, allmodels)
+}
+
+KMeansPredict <- function(x, centers, k, verbose = FALSE, allmodels = FALSE) {
+    .Call('yakmoR_KMeansPredict', PACKAGE = 'yakmoR', x, centers, k, verbose, allmodels)
 }
 
