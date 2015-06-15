@@ -53,14 +53,17 @@ using namespace yakmo;
 //'	obj			this is a vector with the final objective value for each round
 //'
 // [[Rcpp::export]]
-List orthoKMeansTrainCpp (Rcpp::NumericMatrix x = Rcpp::NumericMatrix(), 
-						  unsigned int k = 3, 
-						  unsigned int iter = 100, 
-						  unsigned int rounds = 1, 
-						  std::string initType = "Random",
-						  bool random = true, 
-						  bool verbose = false) 
+List orthoKMeansTrainCpp (
+	Rcpp::NumericMatrix x,
+	bool random = true,
+	bool verbose = false
+)
 {
+	unsigned int k = 3;
+	unsigned int iter = 100;
+	unsigned int rounds = 1; 
+	std::string initType = "Random";
+
 	Rcout << "START\n";
 	
 	// check parameter
@@ -73,8 +76,8 @@ List orthoKMeansTrainCpp (Rcpp::NumericMatrix x = Rcpp::NumericMatrix(),
 		Rcout << "\trandom: \t" << random << "\n";
 		Rcout<<"\tk: \t\t" << k << "\n";
  		Rcout<<"\titerations: \t" << iter<< "\n";
-		Rcout<<"\trounds: \t\t" << rounds << "\n";
-		Rcout<<"\tinitialization: \t" << initType << "\n";
+		Rcout<<"\trounds: \t" << rounds << "\n";
+		Rcout<<"\tinitialization: " << initType << "\n";
 	}
 
 	// temp stringstream

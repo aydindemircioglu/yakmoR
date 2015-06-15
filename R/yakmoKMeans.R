@@ -34,9 +34,9 @@ orthoKMeansTrain <- function(x = NULL,
 	
 	r = .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', 
 		x = x, 
-		k = k, 
-#		initType = init.type,
-		iter = iter.max, 
+	#	k = k, 
+		#initType = init.type,
+		#iter = iter.max, 
 		rounds = rounds, 
 		verbose = verbose)
 

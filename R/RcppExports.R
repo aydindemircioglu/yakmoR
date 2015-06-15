@@ -16,8 +16,8 @@
 #'	cluster 	these are the labels for the resulting clustering (as a std::vector of NumericVector)
 #'	obj			this is a vector with the final objective value for each round
 #'
-orthoKMeansTrainCpp <- function(x = matrix(), k = 3L, iter = 100L, rounds = 1L, initType = "Random", random = TRUE, verbose = FALSE) {
-    .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', x, k, iter, rounds, initType, random, verbose)
+orthoKMeansTrainCpp <- function(x, random = TRUE, verbose = FALSE) {
+    .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', x, random, verbose)
 }
 
 #'  K-Means prediction using yakmo library
