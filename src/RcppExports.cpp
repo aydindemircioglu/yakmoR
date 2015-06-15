@@ -6,15 +6,19 @@
 using namespace Rcpp;
 
 // orthoKMeansTrainCpp
-List orthoKMeansTrainCpp(Rcpp::NumericMatrix x, bool random, bool verbose);
-RcppExport SEXP yakmoR_orthoKMeansTrainCpp(SEXP xSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
+List orthoKMeansTrainCpp(Rcpp::NumericMatrix x, unsigned int rounds, unsigned int k, unsigned int iter, unsigned int initType, bool random, bool verbose);
+RcppExport SEXP yakmoR_orthoKMeansTrainCpp(SEXP xSEXP, SEXP roundsSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP initTypeSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type rounds(roundsSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type initType(initTypeSEXP);
     Rcpp::traits::input_parameter< bool >::type random(randomSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    __result = Rcpp::wrap(orthoKMeansTrainCpp(x, random, verbose));
+    __result = Rcpp::wrap(orthoKMeansTrainCpp(x, rounds, k, iter, initType, random, verbose));
     return __result;
 END_RCPP
 }

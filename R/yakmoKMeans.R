@@ -11,10 +11,10 @@
 #'
 #'  @export
 orthoKMeansTrain <- function(x = NULL, 
-	k = 8, 
+	k = NULL, 
 	rounds = 1, 
-	iter.max = 100L, 
-	init.type = "Random", 
+	iter.max = 100, 
+	init.type = "KMeans++", 
 	verbose = FALSE) 
 {
 	# checkmate checks
@@ -28,26 +28,37 @@ orthoKMeansTrain <- function(x = NULL,
 	checkmate::assertString (init.type)
 	checkmate::assertFlag (verbose)
 	
+	if (init.type == "Random")
+		initType = 0
+	else if (init.type == "KMeans++")
+		initType = 1
+	else 
+		stop ("Unknown centroid initialization method.")
+	
 	# call main function
 	if (verbose == TRUE)
 		message ("Calling C++ function.")
+
+	random = FALSE
 	
 	r = .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', 
 		x = x, 
-	#	k = k, 
-		#initType = init.type,
-		#iter = iter.max, 
 		rounds = rounds, 
+		k = k, 
+		iter = iter.max, 
+		initType = initType,
+		random = random,
 		verbose = verbose)
 
 	# wrap list as object
 	# FIXME: TODO:  
 	obj = BBmisc::makeS3Obj ("yakmoR",
-		x = x, 
+		obj = r$obj,
 		k = k, 
 		iter = iter.max, 
 		m = rounds, 
-		r = r 		
+		centers = r$centers,
+		cluster = r$cluster
 	)
 
 	return (obj)

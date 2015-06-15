@@ -55,19 +55,17 @@ using namespace yakmo;
 // [[Rcpp::export]]
 List orthoKMeansTrainCpp (
 	Rcpp::NumericMatrix x,
-	bool random = true,
+	unsigned int rounds = 1,
+	unsigned int k = 3,
+	unsigned int iter = 100,
+	unsigned int initType = 0,
+	bool random = false,
 	bool verbose = false
 )
 {
-	unsigned int k = 3;
-	unsigned int iter = 100;
-	unsigned int rounds = 1; 
-	std::string initType = "Random";
 
-	Rcout << "START\n";
-	
 	// check parameter
-	if ((initType != "Random") && (initType != "KMeans++"))
+	if ((initType != 0) && (initType != 1))
 		stop ("Unknown initialization type of centroids.");
 	
 	// initalize the options
@@ -92,7 +90,7 @@ List orthoKMeansTrainCpp (
 	opt.m = rounds;
 	opt.random = random;
 	opt.init = RANDOM;
-	if (initType == "KMeans++")
+	if (initType == 1)
 		opt.init = KMEANSPP;
 	
 	
@@ -220,9 +218,7 @@ List orthoKMeansTrainCpp (
 		Rcpp::Named ("centers", centers),
 		Rcpp::Named ("cluster", cluster),
 		Rcpp::Named ("obj", obj)
-	//	Rcpp::Named ("dim", _kms.back()->nf()) 
 	);
-	
 		
 	return (rl);
 }
