@@ -13,6 +13,10 @@
 #include <vector>
 #include <algorithm>
 
+#include <Rcpp.h>
+using namespace Rcpp;
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -136,56 +140,17 @@ namespace yakmo
     option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), random (false), normalize (false), output (0), verbosity (1), mode (BOTH)
     { set (argc, argv); }
     void set (int argc, char** argv) { // getOpt
-      if (argc == 0) return;
-      optind = 1;
-      while (1) {
-        int opt = getopt_long (argc, argv,
-                               yakmo_short_options, yakmo_long_options, NULL);
-        if (opt == -1) break;
-        char* err = NULL;
-        switch (opt) {
-          case 't': dist      = strton <dist_t> (optarg, &err); break;
-          case 'c': init      = strton <init_t> (optarg, &err); break;
-          case 'k': k         = strton <uint> (optarg, &err); break;
-          case 'm': m         = strton <uint> (optarg, &err); break;
-          case 'i': iter      = strton <uint> (optarg, &err); break;
-          case 'r': random    = true; break;
-          case 'n': normalize = true; break;
-          case 'O': output    = strton <uint16_t> (optarg, &err); break;
-          case 'v': verbosity = strton <uint> (optarg, &err); break;
-            // misc
-          case 'h': printCredit (); printHelp (); std::exit (0);
-          default:  printCredit (); std::exit (0);
-        }
-        if (err && *err)
-          errx (1, "unrecognized option value: %s", optarg);
-      }
-      if (dist != EUCLIDEAN)
-        errx (1, "only euclidean distance is supported.");
-      if (init != RANDOM && init != KMEANSPP)
-        errx (1, "unsupported centroid initialization.");
-      if (argc < optind + 3) {
-        printCredit ();
-        errx (1, "Type `%s --help' for option details.", com);
-      }
-      train = argv[optind];
-      model = argv[++optind];
-      test  = argv[++optind];
-      setMode (); // induce appropriate mode
+		stop ("Cannot be called directly.");
     }
     void setMode () {
-      if (std::strcmp (train, "-") == 0 && std::strcmp (test, "-") == 0)
-        errx (1, "specify at least training or test file.");
-      else if (std::strcmp (test,  "-") == 0) mode = TRAIN;
-      else if (std::strcmp (train, "-") == 0) mode = TEST;
-      else                                    mode = BOTH;
-      if (std::strcmp (model, "-") == 0 && mode == TEST)
-        errx (1, "instant mode needs training files.");
-      const char* mode0 [] = {"BOTH", "TRAIN", "TEST"};
-      std::fprintf (stderr, "mode: %s\n", mode0[mode]);
-    }
-    void printCredit () { std::fprintf (stderr, YAKMO_COPYRIGHT, com); }
-    void printHelp   () { std::fprintf (stderr, YAKMO_OPT); }
+		stop ("Cannot be called directly.");
+	}
+    void printCredit () { 
+		stop ("Cannot be called directly.");
+	}
+    void printHelp   () { 
+		stop ("Cannot be called directly.");
+	}
   };
   // implementation of space-efficient k-means using triangle inequality:
   //   G. Hamerly. Making k-means even faster (SDM 2010)
@@ -531,7 +496,8 @@ namespace yakmo
           }
         }
       }
-      if (_opt.verbosity > 1) std::fprintf (stderr, "\n");
+      if (_opt.verbosity > 1) 
+		  Rcout <<  "\n";
     }
     void update_bounds () {
       uint id0 (0), id1 (1);
@@ -566,9 +532,9 @@ namespace yakmo
         }
         if (i > 0) {
           if (_opt.verbosity > 1)
-            std::fprintf (stderr, "  %3d: obj = %e; #moved = %6d\n", i, getObj (), moved);
+            Rcout <<  "  %3d: obj = %e; #moved = %6d\n", i, getObj (), moved;
           else
-            std::fprintf (stderr, ".");
+            Rcout <<  ".";
         }
         if (! moved) break;
         for (uint j = 0; j < _opt.k; ++j)
@@ -591,11 +557,11 @@ namespace yakmo
           }
         }
       }
-      std::fprintf (stderr, "%s", moved ? "break" : "done");
+      Rcout <<  "%s", moved ? "break" : "done";
       if (_opt.verbosity == 1)
-        std::fprintf (stderr, "; obj = %g.\n", getObj ());
+        Rcout <<  "; obj = %g.\n", getObj ();
       else
-        std::fprintf (stderr, ".\n");
+        Rcout <<  ".\n";
     }
   private:
     const option _opt;
@@ -667,7 +633,7 @@ namespace yakmo
       _kms.push_back (km);
       std::fclose (fp);
       for (uint i = 1; i <= iter; ++i) {
-        std::fprintf (stderr, "iter=%d k-means (k=%d): ", i, _opt.k);
+        Rcout <<  "iter=%d k-means (k=%d): ", i, _opt.k;
         if (i >= 2) {
           kmeans* km_ = _kms.back (); // last of mohikans
           // project

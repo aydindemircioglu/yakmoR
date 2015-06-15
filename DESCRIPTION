@@ -8,7 +8,8 @@ Maintainer: Aydin Demircioglu <aydin.demircioglu@ini.rub.de>
 Description: This is a simple wrapper for the yakmo kmeans library (developed by Naoki Yoshinaga, see http://http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/yakmo/)
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.11.6),
-    checkmate (>= 1.5.1)
+    checkmate (>= 1.5.1),
+    BBmisc (>= 1.9)
 LinkingTo: Rcpp
 Suggests: knitr,
     testthat

@@ -1,29 +1,48 @@
 
 
+#' orthogonal kmeans training function
+#' 
+#'  @param		x	data to cluster
+#'  @param		k	number of centroids
+#'  @param		rounds	number of rounds/views for orthogonal kmeans
+#'  @param		iter.max	number of maximal iterations for each clustering
+#'  @param		init.type	string with method to initialize centroids
+#'  @param		verbose	show verbose messages?
 #'
-#' 
-#' 
-#' 
-orthoKMeansTrain <- function(x, k = 8, rounds = 1, iter.max = 100L, verbose = FALSE) {
-
+#'  @export
+orthoKMeansTrain <- function(x = NULL, 
+	k = 8, 
+	rounds = 1, 
+	iter.max = 100L, 
+	init.type = "Random", 
+	verbose = FALSE) 
+{
 	# checkmate checks
-	checkmate::testDataFrame(x, "data.frame", min.rows = k + 1)
-	checkmate::testCount(k)
-	checkmate::testCount(rounds)
-	checkmate::testCount(iter.max)
-	checkmate::testFlag (verbose)
+	if (verbose == TRUE)
+		message ("Checking arguments.")
+
+	checkmate::assertMatrix(x, min.rows = k + 1)
+	checkmate::assertCount(k)
+	checkmate::assertCount(rounds)
+	checkmate::assertCount(iter.max)
+	checkmate::assertString (init.type)
+	checkmate::assertFlag (verbose)
 	
 	# call main function
-   r = .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', 
+	if (verbose == TRUE)
+		message ("Calling C++ function.")
+	
+	r = .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', 
 		x = x, 
 		k = k, 
+#		initType = init.type,
 		iter = iter.max, 
-		m = rounds, 
+		rounds = rounds, 
 		verbose = verbose)
 
 	# wrap list as object
 	# FIXME: TODO:  
-	obj = makeS3Object ("yakmoR",
+	obj = BBmisc::makeS3Obj ("yakmoR",
 		x = x, 
 		k = k, 
 		iter = iter.max, 
@@ -35,28 +54,33 @@ orthoKMeansTrain <- function(x, k = 8, rounds = 1, iter.max = 100L, verbose = FA
 }
 
 
+
+#' orthogonal kmeans prediction function
+#' 
+#'  @param		x	data to assign clusters
+#'  @param		rounds	list of views, if multiple views were computed
+#'  @param		verbose	show verbose messages?
+#'  @return		numericmatrix with as many colums as specified in the rounds array
 #'
-#' 
-#' 
-#' 
-orthoKMeansPredict <- function (x, round =  1, verbose = FALSE) {
+#'  @export
+orthoKMeansPredict <- function (x, rounds =  1, verbose = FALSE) {
 	
 	# checkmate checks
-	checkmate::testDataFrame(x, "data.frame", min.rows = 1)
-	checkmate::testCount(rounds)
-	checkmate::testFlag (verbose)
+# 	checkmate::testDataFrame(x, "data.frame", min.rows = 1)
+# 	checkmate::testCount(rounds)
+# 	checkmate::testFlag (verbose)
 
 	# if multiple orthogonal rounds have been trained,
 	# we return a matrix of all predictions
 	
-	# call
-	r = .Call('yakmoR_orthoKMeansPredictCpp', PACKAGE = 'yakmoR', 
-		x = x, 
-		k = k, 
-		iter = iter.max, 
-		m = rounds, 
-		verbose = verbose, 
-		allmodels = allmodels)
+# 	# call
+# 	r = .Call('yakmoR_orthoKMeansPredictCpp', PACKAGE = 'yakmoR', 
+# 		x = x, 
+# 		k = k, 
+# 		iter = iter.max, 
+# 		m = rounds, 
+# 		verbose = verbose, 
+# 		allmodels = allmodels)
 
 }
 

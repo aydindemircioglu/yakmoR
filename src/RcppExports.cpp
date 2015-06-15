@@ -6,34 +6,32 @@
 using namespace Rcpp;
 
 // orthoKMeansTrainCpp
-List orthoKMeansTrainCpp(NumericMatrix x, unsigned int k, unsigned int iter, unsigned int m, std::string initType, bool random, bool verbose);
-RcppExport SEXP yakmoR_orthoKMeansTrainCpp(SEXP xSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP mSEXP, SEXP initTypeSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
+List orthoKMeansTrainCpp(Rcpp::NumericMatrix x, unsigned int k, unsigned int iter, unsigned int rounds, std::string initType, bool random, bool verbose);
+RcppExport SEXP yakmoR_orthoKMeansTrainCpp(SEXP xSEXP, SEXP kSEXP, SEXP iterSEXP, SEXP roundsSEXP, SEXP initTypeSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type rounds(roundsSEXP);
     Rcpp::traits::input_parameter< std::string >::type initType(initTypeSEXP);
     Rcpp::traits::input_parameter< bool >::type random(randomSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    __result = Rcpp::wrap(orthoKMeansTrainCpp(x, k, iter, m, initType, random, verbose));
+    __result = Rcpp::wrap(orthoKMeansTrainCpp(x, k, iter, rounds, initType, random, verbose));
     return __result;
 END_RCPP
 }
 // orthoKMeansPredictCpp
-List orthoKMeansPredictCpp(NumericMatrix x, std::vector <NumericMatrix> centers, int k, bool verbose, bool allmodels);
-RcppExport SEXP yakmoR_orthoKMeansPredictCpp(SEXP xSEXP, SEXP centersSEXP, SEXP kSEXP, SEXP verboseSEXP, SEXP allmodelsSEXP) {
+List orthoKMeansPredictCpp(NumericMatrix x, std::vector <NumericMatrix> centers, bool verbose);
+RcppExport SEXP yakmoR_orthoKMeansPredictCpp(SEXP xSEXP, SEXP centersSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
     Rcpp::traits::input_parameter< std::vector <NumericMatrix> >::type centers(centersSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< bool >::type allmodels(allmodelsSEXP);
-    __result = Rcpp::wrap(orthoKMeansPredictCpp(x, centers, k, verbose, allmodels));
+    __result = Rcpp::wrap(orthoKMeansPredictCpp(x, centers, verbose));
     return __result;
 END_RCPP
 }
