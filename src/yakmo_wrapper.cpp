@@ -42,53 +42,57 @@ using namespace yakmo;
 //'  @param	x		data matrix 
 //'  @param	k		number of clusters
 //'  @param	iter	numer of iterations in one round
-//'  @param	m		number of rounds
+//'  @param	m		number of rounds (orthogonal views)
+//'  @param	initType		centroid initialization via Random or KMeans++
+//'  @param	random		use random or pseudo-random (seeded) generator?
 //'  @param	verbose		verbose output?
-//'  @param	allmodels	save all models of each round?
 //'
 //'  @return	a list consisting of
-//'	centers	these are the resulting centroids of the kmean algorithm
-//'	cluster 	these are the labels for the resulting clustering
+//'	centers	these are the resulting centroids of the kmean algorithm (as a std::vector of NumericMatrix)
+//'	cluster 	these are the labels for the resulting clustering (as a std::vector of NumericVector)
 //'	obj			this is a vector with the final objective value for each round
-//'	dim			dimension of the input space (=dim of centroids)
-//'	allcenters	this is the list of centroids, one matrix of centroids for each round
-//'	allcluster		this is the list of labels, one vector for each round
 //'
-// (TODO: extract as some kind of prediction function?)
-//
 // [[Rcpp::export]]
-List KMeans(NumericMatrix x, unsigned int k = 3, unsigned int iter = 100, unsigned int m = 1, bool verbose = false, bool allmodels = false ) {
-	// temp stringstream
-	stringstream tmpS;
+List orthoKMeansTrainCpp (NumericMatrix x, 
+						  unsigned int k = 3, 
+						  unsigned int iter = 100, 
+						  unsigned int m = 1, 
+						  std::string initType = "Random", 
+						  bool random = false, 
+						  bool verbose = false) 
+{
+	// check parameter
+	if ((initType != "Random") && (initType != "KMeans++"))
+		stop ("Unknown initialization type of centroids.");
 	
 	// initalize the options
 	if (verbose == true) {
 		Rcout << "Parameters:\n";
+		Rcout << "\trandom: \t" << random << "\n";
 		Rcout<<"\tk: \t\t" << k << "\n";
  		Rcout<<"\titerations: \t" << iter<< "\n";
-		Rcout<<"\tm: \t\t" << m << "\n";
+		Rcout<<"\trounds: \t\t" << m << "\n";
+		Rcout<<"\tinitialization: \t" << initType << "\n";
 	}
+
+	// temp stringstream
+	stringstream tmpS;
+	
 	
 	// create a new opt structure here
 	yakmo::option opt (0, NULL);
 	opt.k = k;
 	opt.iter = iter;
 	opt.m = m;
+	opt.random = random;
+	opt.init = RANDOM;
+	if (initType == "KMeans++")
+		opt.init = KMEANSPP;
+	
 	
 	if (verbose == true) 
 		opt.verbosity = 1;
-	/*
-	dist_t   dist;  // dist-type
-	init_t   init;  //
-	bool     random;
-	bool     normalize;
-	uint16_t output;
-	mode_t   mode;
-	option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), 
-	*/
-	
-	//yakmo::orthogonal_kmeans* m = new yakmo::orthogonal_kmeans (opt);
-	
+
 	// first do a check for k and number of rows
 	if (x.rows() <= opt.k) {
 		stringstream s;
@@ -102,6 +106,7 @@ List KMeans(NumericMatrix x, unsigned int k = 3, unsigned int iter = 100, unsign
 	// fill  current kmean object with data
 	kmeans* km = new kmeans (opt);
 
+	// FIXME: do we really need this?
 	kmeans* shadow = new kmeans (opt);
 	
 	
@@ -163,8 +168,8 @@ List KMeans(NumericMatrix x, unsigned int k = 3, unsigned int iter = 100, unsign
 	// _kms.back ()->clear_point ();
 	
 	// do we want to save all intermediate models?
-	Rcpp::List allcluster;
-	Rcpp::List allcenters;
+	std::vector<NumericVector> allcluster;
+	std::vector<NumericMatrix> allcenters;
 
 	// extract clusters
 	NumericMatrix centers (opt.k, x.cols());
@@ -178,9 +183,9 @@ List KMeans(NumericMatrix x, unsigned int k = 3, unsigned int iter = 100, unsign
 				tmpN = centroid[j].print();
 				cc (j, _) = tmpN;
 			}
-			tmpS.str("");
-			tmpS << i;
-			allcenters[tmpS.str()] = cc;
+
+			allcenters.push_back (cc);
+
 			// last centroids will be copied over
 			if (i == _kms.size() - 1) {
 				centers = cc;
@@ -218,9 +223,9 @@ List KMeans(NumericMatrix x, unsigned int k = 3, unsigned int iter = 100, unsign
 			cc[j] = p.id;
 			p.project (km->centroid ()[p.id]);
 		} 
-		tmpS.str("");
-		tmpS << i;
-		allcluster[tmpS.str()] = cc;
+
+		allcluster.push_back (cc); 
+		
 		// last centroids will be copied over
 		if (i == _kms.size() - 1) {
 			cluster = cc;
@@ -266,7 +271,7 @@ List KMeans(NumericMatrix x, unsigned int k = 3, unsigned int iter = 100, unsign
 // (TODO: extract as some kind of prediction function?)
 //
 // [[Rcpp::export]]
-List KMeansPredict(NumericMatrix x, 
+List orthoKMeansPredictCpp (NumericMatrix x, 
 				   std::vector <NumericMatrix> centers,
 				   int k, 
 				   bool verbose = false, bool allmodels = false ) {
