@@ -195,7 +195,8 @@ List orthoKMeansTrainCpp (
 	// we need to go through all models even if user only wants
 	// the last one as we somehow change the dataset?
 
-	// get back centroids
+	// get back centroids and nf vector (TODO:needed?)
+	unsigned int nf;
 	std::vector<kmeans::point_t> &pts = shadow -> point();
 	for (uint i = 0; i < _kms.size (); ++i) {
 		kmeans* km =_kms[i];
@@ -211,13 +212,15 @@ List orthoKMeansTrainCpp (
 			p.project (km->centroid ()[p.id]);
 		} 
 		cluster.push_back (cc); 
+		nf = (km -> nf());
 	}
-
+	
 	// return list
 	Rcpp::List rl = Rcpp::List::create (
 		Rcpp::Named ("centers", centers),
 		Rcpp::Named ("cluster", cluster),
-		Rcpp::Named ("obj", obj)
+		Rcpp::Named ("obj", obj),
+		Rcpp::Named ("nf", nf)
 	);
 		
 	return (rl);
@@ -244,49 +247,40 @@ List orthoKMeansTrainCpp (
 // [[Rcpp::export]]
 List orthoKMeansPredictCpp (NumericMatrix x, 
 				   std::vector <NumericMatrix> centers,
+				   unsigned int nf,
+				   unsigned int k = 0,
 				   bool verbose = false	) {
-	
-	// the algorithm needs the following three variables
-	// m, k, nf
-	// we do not need m as we know the number of models in the list
-	unsigned int k = 8;
-
-	
-	// create an option object
-	yakmo::option opt (0, NULL);
-	opt.k = k;
-	opt.m = centers.size();
-
-	if (verbose == true) {
-		Rcout << "Parameters:\n";
-		Rcout<<"\tk: \t\t" << k << "\n";
-	}
-	
 	
 	// temp stringstream
 	stringstream tmpS;
-	
-	kmeans* shadow = new kmeans (opt);
 
+	// create an option object
+	yakmo::option opt (0, NULL);
+	opt.m = centers.size();
+	opt.k = k;
 	
+	// initalize the options
+	if (verbose == true) {
+		Rcout << "Parameters:\n";
+		Rcout<<"\tk: \t\t" << opt.k << "\n";		
+		Rcout<<"\tm: \t\t" << opt.m << "\n";
+	}
+		
 	// container for all the kmeans
 	std::vector <kmeans*> _kms;
 	
 	
+	// load data first
 	std::vector <kmeans::node_t> body;
-	for (uint i = 0; i < opt.m; ++i) {
+	for (uint i = 0; i < centers.size(); ++i) {
 		// create a new kmeans object
 		kmeans* km = new kmeans (opt);
-//		km->nf () = nf;
-// FIXME
-		// TODO: actually, we would rather not convert, but then we need to change yakmo
-		// and for now i do not want that.
-		
+		km -> nf() = nf;
 		for (size_t e = 0; e < centers[i].rows(); e++) {
 			tmpS.str(std::string());
 			
-			for (size_t j = 0; j < x.cols(); j++) {
-				tmpS << j << ":" << std::setprecision(16) << x (e, j);
+			for (size_t j = 0; j < centers[i].cols(); j++) {
+				tmpS << j << ":" << std::setprecision(16) << centers[i](e, j);
 				tmpS << " ";
 			}
 			// get size (dont need to replay)
@@ -297,6 +291,7 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 			
 			char *ex(cstr);
 			char *ex_end (cstr + tmpS.str().length() );
+			km->nf () = nf;
 			kmeans::point_t p = kmeans::read_point (ex, ex_end, body, opt.normalize);
 			km->push_centroid (p, true); // delegated
 			
@@ -305,13 +300,11 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 		
 		_kms.push_back (km);
 	}
-
 	
-	// now the same thing for the test data
+		
+	std::vector <kmeans::point_t>     point;
+	body.clear();
 	
-	
-	// TODO: actually, we would rather not convert, but then we need to change yakmo
-	// and for now i do not want that.
 	for (size_t e = 0; e < x.rows(); e++) {
 		tmpS.str(std::string());
 		
@@ -327,57 +320,40 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 		
 		char *ex(cstr);
 		char *ex_end (cstr + tmpS.str().length() );
-		_kms.front()->set_point (ex, ex_end, opt.normalize);
-		shadow->set_point (ex, ex_end, opt.normalize);
+		point.push_back (kmeans::read_point (ex, ex_end, body, opt.normalize));
 		
 		delete[] cstr;
 	}
 	
-		
-//	_kms.back ()->compress ();
-	// _kms.back ()->clear_point ();
-	
-	
-	// do we want to save all intermediate models?
-	Rcpp::List allcluster;
-	Rcpp::List allcenters;
-	
 	
 	// create labels for training set 
-	NumericVector cluster (x.rows());
-	
-	// we need to go through all models even if user only wants
-	// the last one as we somehow change the dataset?
-	
-	// get back centroids
-	std::vector<kmeans::point_t> &pts = shadow -> point();
-	for (uint i = 0; i < _kms.size (); ++i) {
-		kmeans* km =_kms[i];
+	NumericMatrix cluster (x.rows(), centers.size());
+	for (unsigned r = 0; r < centers.size(); r++) {
+		if (verbose == TRUE) 
+			Rcout << "Predicting round "<< r << ".\n";
+		
+		// get back centroids
+		kmeans* km =_kms[ r ];
 		
 		km->decompress ();
 		NumericVector cc (x.rows());
 		
-		for (uint j = 0; j < pts.size (); ++j) {
-			kmeans::point_t p = pts[j];
-			p.shrink (km->nf ());
+		for (uint j = 0; j < point.size (); ++j) {
+			kmeans::point_t p = point[j];
+			p.shrink (km -> nf());
 			p.set_closest (km->centroid (), opt.dist);
 			cc[j] = p.id;
 			p.project (km->centroid ()[p.id]);
 		} 
-		tmpS.str("");
-		tmpS << i;
-		allcluster[tmpS.str()] = cc;
-		// last centroids will be copied over
-		if (i == _kms.size() - 1) {
-			cluster = cc;
-		}
+		cluster (_ ,r) = cc;
 	}
 	
 	// return list
 	Rcpp::List rl = Rcpp::List::create ();
-	rl["allcluster"] = allcluster;
+	rl["cluster"] = cluster;
 	
 	return (rl);
 }
+
 
 

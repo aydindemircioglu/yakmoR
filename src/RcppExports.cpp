@@ -23,15 +23,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // orthoKMeansPredictCpp
-List orthoKMeansPredictCpp(NumericMatrix x, std::vector <NumericMatrix> centers, bool verbose);
-RcppExport SEXP yakmoR_orthoKMeansPredictCpp(SEXP xSEXP, SEXP centersSEXP, SEXP verboseSEXP) {
+List orthoKMeansPredictCpp(NumericMatrix x, std::vector <NumericMatrix> centers, unsigned int nf, unsigned int k, bool verbose);
+RcppExport SEXP yakmoR_orthoKMeansPredictCpp(SEXP xSEXP, SEXP centersSEXP, SEXP nfSEXP, SEXP kSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
     Rcpp::traits::input_parameter< std::vector <NumericMatrix> >::type centers(centersSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nf(nfSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    __result = Rcpp::wrap(orthoKMeansPredictCpp(x, centers, verbose));
+    __result = Rcpp::wrap(orthoKMeansPredictCpp(x, centers, nf, k, verbose));
     return __result;
 END_RCPP
 }

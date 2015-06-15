@@ -51,14 +51,14 @@ orthoKMeansTrain <- function(x = NULL,
 		verbose = verbose)
 
 	# wrap list as object
-	# FIXME: TODO:  
 	obj = BBmisc::makeS3Obj ("yakmoR",
 		obj = r$obj,
 		k = k, 
 		iter = iter.max, 
-		m = rounds, 
+		rounds = rounds, 
 		centers = r$centers,
-		cluster = r$cluster
+		cluster = r$cluster,
+		nf = r$nf
 	)
 
 	return (obj)
@@ -74,26 +74,25 @@ orthoKMeansTrain <- function(x = NULL,
 #'  @return		numericmatrix with as many colums as specified in the rounds array
 #'
 #'  @export
-orthoKMeansPredict <- function (x, rounds =  1, verbose = FALSE) {
-	
+orthoKMeansPredict <- function (x, obj = NULL, verbose = FALSE) {
+
 	# checkmate checks
-# 	checkmate::testDataFrame(x, "data.frame", min.rows = 1)
-# 	checkmate::testCount(rounds)
-# 	checkmate::testFlag (verbose)
+	checkmate::assertClass (obj, "yakmoR")
+	checkmate::assertMatrix(x, min.rows = 1)
+	checkmate::assertFlag (verbose)
 
 	# if multiple orthogonal rounds have been trained,
 	# we return a matrix of all predictions
-	
-# 	# call
-# 	r = .Call('yakmoR_orthoKMeansPredictCpp', PACKAGE = 'yakmoR', 
-# 		x = x, 
-# 		k = k, 
-# 		iter = iter.max, 
-# 		m = rounds, 
-# 		verbose = verbose, 
-# 		allmodels = allmodels)
 
+# 	# call
+	r = .Call('yakmoR_orthoKMeansPredictCpp', PACKAGE = 'yakmoR', 
+		x = x, 
+		obj$centers,
+		obj$nf,
+		obj$k,
+		verbose = verbose)
 }
+
 
 # 
 # KMeans = function (x, centers, iter.max = 10, nstart = 1, algorithm = c("Hartigan-Wong", 

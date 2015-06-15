@@ -34,7 +34,7 @@ orthoKMeansTrainCpp <- function(x, rounds = 1L, k = 3L, iter = 100L, initType = 
 #'	allcenters	this is the list of centroids, one matrix of centroids for each round
 #'	allcluster		this is the list of labels, one vector for each round
 #'
-orthoKMeansPredictCpp <- function(x, centers, verbose = FALSE) {
-    .Call('yakmoR_orthoKMeansPredictCpp', PACKAGE = 'yakmoR', x, centers, verbose)
+orthoKMeansPredictCpp <- function(x, centers, nf, k = 0L, verbose = FALSE) {
+    .Call('yakmoR_orthoKMeansPredictCpp', PACKAGE = 'yakmoR', x, centers, nf, k, verbose)
 }
 
