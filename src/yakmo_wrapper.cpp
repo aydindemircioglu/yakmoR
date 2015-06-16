@@ -63,7 +63,6 @@ List orthoKMeansTrainCpp (
 	bool verbose = false
 )
 {
-
 	// check parameter
 	if ((initType != 0) && (initType != 1))
 		stop ("Unknown initialization type of centroids.");
@@ -80,7 +79,6 @@ List orthoKMeansTrainCpp (
 
 	// temp stringstream
 	stringstream tmpS;
-	
 	
 	
 	// create a new opt structure here
@@ -110,12 +108,13 @@ List orthoKMeansTrainCpp (
 	// fill  current kmean object with data
 	kmeans* km = new kmeans (opt);
 
-	// FIXME: do we really need this?
+	// TODO; this is just a container with all the data.
+	// probably can be removed, for now i need it.
 	kmeans* shadow = new kmeans (opt);
 	
 	
-	// TODO: actually, we would rather not convert, but then we need to change yakmo
-	// and for now i do not want that.
+	// actually, we would rather not convert, but i want to change yakmo.h
+	// as little as possible. so this way is somewhat easier.
 	for (size_t e = 0; e < x.rows(); e++) {
 		tmpS.str(std::string());
 		
@@ -162,14 +161,15 @@ List orthoKMeansTrainCpp (
 			km_->delegate (km);
 			km_->compress ();
 			_kms.push_back (km);
-			//	km_->clear_centroid ();
 		}
 		km->run ();
 		obj[i-1] = km -> getObj();
+		
+		// check for interrupt
+		Rcpp::checkUserInterrupt();
 	}
 
 	_kms.back ()->compress ();
-	// _kms.back ()->clear_point ();
 	
 	// do we want to save all intermediate models?
 	std::vector<NumericMatrix> centers;
@@ -195,7 +195,7 @@ List orthoKMeansTrainCpp (
 	// we need to go through all models even if user only wants
 	// the last one as we somehow change the dataset?
 
-	// get back centroids and nf vector (TODO:needed?)
+	// get back centroids and nf vector
 	unsigned int nf;
 	std::vector<kmeans::point_t> &pts = shadow -> point();
 	for (uint i = 0; i < _kms.size (); ++i) {
@@ -233,16 +233,13 @@ List orthoKMeansTrainCpp (
 //'  K-Means prediction using yakmo library
 //' 
 //'  @param	x		data matrix 
-//'  @param	centers	centers FIXME
+//'  @param	centers	centers
+//'  @param	nf		number of features
+//'  @param	k		number of clusters
 //'  @param	verbose		verbose output?
 //'
 //'  @return	a list consisting of
-//'	centers	these are the resulting centroids of the kmean algorithm
-//'	cluster 	these are the labels for the resulting clustering
-//'	obj			this is a vector with the final objective value for each round
-//'	dim			dimension of the input space (=dim of centroids)
-//'	allcenters	this is the list of centroids, one matrix of centroids for each round
-//'	allcluster		this is the list of labels, one vector for each round
+//'	cluster 	these are the labels for the resulting clustering, one column for each clustering
 //'
 // [[Rcpp::export]]
 List orthoKMeansPredictCpp (NumericMatrix x, 

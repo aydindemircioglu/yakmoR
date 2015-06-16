@@ -2,7 +2,6 @@
 //  $Id: yakmo.h 1866 2015-01-21 10:25:43Z ynaga $
 // Copyright (c) 2012-2015 Naoki Yoshinaga <ynaga@tkl.iis.u-tokyo.ac.jp>
 #include <getopt.h>
-#include <err.h>
 #include <stdint.h>
 #include <ctime>
 #include <cstdio>
@@ -13,6 +12,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "errx_dummy.h"
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -103,7 +103,9 @@ namespace yakmo
   static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
 #ifdef __APPLE__
     if ((line = fgetln (fp, &read)) == NULL) return false;
-#else
+#elif WIN32
+	if ((line = fgetln (fp, &read)) == NULL) return false;
+	#else
     static ssize_t read_ = 0; static size_t size = 0; // static helps inlining
     if ((read_ = getline (&line, &size, fp)) == -1) return false;
     read = read_;
@@ -186,10 +188,10 @@ namespace yakmo
       if (std::strcmp (model, "-") == 0 && mode == TEST)
         errx (1, "instant mode needs training files.");
       const char* mode0 [] = {"BOTH", "TRAIN", "TEST"};
-      std::fprintf (stderr, "mode: %s\n", mode0[mode]);
+      Rcout << "mode:" << mode0[mode] << "\n";
     }
-    void printCredit () { std::fprintf (stderr, YAKMO_COPYRIGHT, com); }
-    void printHelp   () { std::fprintf (stderr, YAKMO_OPT); }
+    void printCredit () { Rcout << YAKMO_COPYRIGHT << com; }
+    void printHelp   () { Rcout << YAKMO_OPT; }
   };
   // implementation of space-efficient k-means using triangle inequality:
   //   G. Hamerly. Making k-means even faster (SDM 2010)
@@ -535,7 +537,7 @@ namespace yakmo
           }
         }
       }
-      if (_opt.verbosity > 1) std::fprintf (stderr, "\n");
+      if (_opt.verbosity > 1) Rcout << "\n";
     }
     void update_bounds () {
       uint id0 (0), id1 (1);
@@ -570,9 +572,9 @@ namespace yakmo
         }
         if (i > 0) {
           if (_opt.verbosity > 1)
-            std::fprintf (stderr, "  %3d: obj = %e; #moved = %6d\n", i, getObj (), moved);
+            Rcout << i << "  obj = " << getObj () << " #moved = " << moved;
           else
-            std::fprintf (stderr, ".");
+            Rcout << ".";
         }
         if (! moved) break;
         for (uint j = 0; j < _opt.k; ++j)
@@ -595,11 +597,11 @@ namespace yakmo
           }
         }
       }
-      std::fprintf (stderr, "%s", moved ? "break" : "done");
+      Rcout <<  moved ? "break" : "done";
       if (_opt.verbosity == 1)
-        std::fprintf (stderr, "; obj = %g.\n", getObj ());
+        Rcout << "; obj = "<< getObj () << "\n";
       else
-        std::fprintf (stderr, ".\n");
+        Rcout << ".\n";
     }
   private:
     const option _opt;
@@ -671,7 +673,7 @@ namespace yakmo
       _kms.push_back (km);
       std::fclose (fp);
       for (uint i = 1; i <= iter; ++i) {
-        std::fprintf (stderr, "iter=%d k-means (k=%d): ", i, _opt.k);
+        Rcout << "iter=" << i << " k-means (k=" << _opt.k << "): ";
         if (i >= 2) {
           kmeans* km_ = _kms.back (); // last of mohikans
           // project

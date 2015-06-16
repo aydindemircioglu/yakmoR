@@ -23,16 +23,13 @@ orthoKMeansTrainCpp <- function(x, rounds = 1L, k = 3L, iter = 100L, initType = 
 #'  K-Means prediction using yakmo library
 #' 
 #'  @param	x		data matrix 
-#'  @param	centers	centers FIXME
+#'  @param	centers	centers
+#'  @param	nf		number of features
+#'  @param	k		number of clusters
 #'  @param	verbose		verbose output?
 #'
 #'  @return	a list consisting of
-#'	centers	these are the resulting centroids of the kmean algorithm
-#'	cluster 	these are the labels for the resulting clustering
-#'	obj			this is a vector with the final objective value for each round
-#'	dim			dimension of the input space (=dim of centroids)
-#'	allcenters	this is the list of centroids, one matrix of centroids for each round
-#'	allcluster		this is the list of labels, one vector for each round
+#'	cluster 	these are the labels for the resulting clustering, one column for each clustering
 #'
 orthoKMeansPredictCpp <- function(x, centers, nf, k = 0L, verbose = FALSE) {
     .Call('yakmoR_orthoKMeansPredictCpp', PACKAGE = 'yakmoR', x, centers, nf, k, verbose)

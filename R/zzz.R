@@ -52,3 +52,7 @@ yakmoREnv = new.env(parent = emptyenv())
 	packageStartupMessage("yakmoR loaded.")
 }
 
+
+.onUnload <- function (libpath) {
+  library.dynam.unload("yakmoR", libpath)
+}

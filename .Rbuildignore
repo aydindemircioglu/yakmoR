@@ -25,3 +25,6 @@ testinfo.RData
 ^demo\.R$
 ^doc$
 .gitignore
+..Rcheck
+R/..Rcheck
+.git

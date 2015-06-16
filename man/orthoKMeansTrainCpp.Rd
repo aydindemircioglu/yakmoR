@@ -4,17 +4,17 @@
 \alias{orthoKMeansTrainCpp}
 \title{K-Means using yakmo library}
 \usage{
-orthoKMeansTrainCpp(x = matrix(), k = 3L, iter = 100L, rounds = 1L,
-  initType = "Random", random = TRUE, verbose = FALSE)
+orthoKMeansTrainCpp(x, rounds = 1L, k = 3L, iter = 100L, initType = 0L,
+  random = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{data matrix}
 
+\item{rounds}{number of rounds (orthogonal views)}
+
 \item{k}{number of clusters}
 
 \item{iter}{numer of iterations in one round}
-
-\item{rounds}{number of rounds (orthogonal views)}
 
 \item{initType}{centroid initialization via Random or KMeans++}
 

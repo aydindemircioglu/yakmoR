@@ -4,23 +4,22 @@
 \alias{orthoKMeansPredictCpp}
 \title{K-Means prediction using yakmo library}
 \usage{
-orthoKMeansPredictCpp(x, centers, verbose = FALSE)
+orthoKMeansPredictCpp(x, centers, nf, k = 0L, verbose = FALSE)
 }
 \arguments{
 \item{x}{data matrix}
 
-\item{centers}{centers FIXME}
+\item{centers}{centers}
+
+\item{nf}{number of features}
+
+\item{k}{number of clusters}
 
 \item{verbose}{verbose output?}
 }
 \value{
 a list consisting of
-	centers	these are the resulting centroids of the kmean algorithm
-	cluster 	these are the labels for the resulting clustering
-	obj			this is a vector with the final objective value for each round
-	dim			dimension of the input space (=dim of centroids)
-	allcenters	this is the list of centroids, one matrix of centroids for each round
-	allcluster		this is the list of labels, one vector for each round
+	cluster 	these are the labels for the resulting clustering, one column for each clustering
 }
 \description{
 K-Means prediction using yakmo library
