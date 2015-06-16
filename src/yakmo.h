@@ -3,9 +3,6 @@
 // Copyright (c) 2012-2015 Naoki Yoshinaga <ynaga@tkl.iis.u-tokyo.ac.jp>
 
 
-#ifdef WIN32
-#define _GNU_SOURCE
-#endif
 
 #include <getopt.h>
 #include <stdint.h>
@@ -21,6 +18,11 @@
 #include "errx_dummy.h"
 #include <Rcpp.h>
 using namespace Rcpp;
+
+// this function is not used anyway, so a compile fix.
+#ifdef WIN32
+ssize_t getline (char **lineptr, size_t *n, FILE *stream);
+#endif
 
 
 #ifdef HAVE_CONFIG_H
