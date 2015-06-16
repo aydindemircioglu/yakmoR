@@ -122,9 +122,7 @@ List orthoKMeansTrainCpp (
 			tmpS << j << ":" << std::setprecision(16) << x (e, j);
 				tmpS << " ";
 		}
-		// get size (dont need to replay)
-		int size = tmpS.str().length();
-		
+
 		char *cstr = new char [tmpS.str().length()+1];
 		std::strcpy (cstr, tmpS.str().c_str());
 		
@@ -269,19 +267,17 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 	
 	// load data first
 	std::vector <kmeans::node_t> body;
-	for (uint i = 0; i < centers.size(); ++i) {
+	for (int i = 0; i < centers.size(); ++i) {
 		// create a new kmeans object
 		kmeans* km = new kmeans (opt);
 		km -> nf() = nf;
-		for (size_t e = 0; e < centers[i].rows(); e++) {
+		for (int e = 0; e < centers[i].rows(); e++) {
 			tmpS.str(std::string());
 			
-			for (size_t j = 0; j < centers[i].cols(); j++) {
+			for (uint j = 0; j < centers[i].cols(); j++) {
 				tmpS << j << ":" << std::setprecision(16) << centers[i](e, j);
 				tmpS << " ";
 			}
-			// get size (dont need to replay)
-			int size = tmpS.str().length();
 			
 			char *cstr = new char [tmpS.str().length()+1];
 			std::strcpy (cstr, tmpS.str().c_str());
@@ -302,15 +298,13 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 	std::vector <kmeans::point_t>     point;
 	body.clear();
 	
-	for (size_t e = 0; e < x.rows(); e++) {
+	for (int e = 0; e < x.rows(); e++) {
 		tmpS.str(std::string());
 		
-		for (size_t j = 0; j < x.cols(); j++) {
+		for (int j = 0; j < x.cols(); j++) {
 			tmpS << j << ":" << std::setprecision(16) << x (e, j);
 			tmpS << " ";
 		}
-		// get size (dont need to replay)
-		int size = tmpS.str().length();
 		
 		char *cstr = new char [tmpS.str().length()+1];
 		std::strcpy (cstr, tmpS.str().c_str());

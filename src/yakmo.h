@@ -603,7 +603,10 @@ namespace yakmo
           }
         }
       }
-      Rcout <<  moved ? "break" : "done";
+      if (moved > 0)
+		Rcout <<  "break";
+	  else
+		Rcout <<  "done";
       if (_opt.verbosity == 1)
         Rcout << "; obj = "<< getObj () << "\n";
       else
