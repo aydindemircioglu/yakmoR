@@ -29,25 +29,6 @@ ssize_t getline (char **lineptr, size_t *n, FILE *stream);
 #include "config.h"
 #endif
 
-#ifdef USE_MT19937
-#include <random>
-#endif
-
-#ifdef USE_TR1_MT19937
-#include <tr1/random>
-namespace std { using namespace tr1; }
-#define USE_MT19937
-#endif
-
-#ifdef USE_HASH
-#include <unordered_set>
-#endif
-
-#ifdef USE_TR1_HASH
-#include <tr1/unordered_set>
-namespace std { using namespace tr1; }
-#define USE_HASH
-#endif
 
 #ifndef USE_HASH
 #include <set>
@@ -103,11 +84,9 @@ extern int   optind;
 namespace yakmo
 {
   typedef unsigned int  uint;
-#ifdef USE_FLOAT
-  typedef float  fl_t;
-#else
+
   typedef double fl_t;
-#endif
+
   static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
 #ifdef __APPLE__
     if ((line = fgetln (fp, &read)) == NULL) return false;
