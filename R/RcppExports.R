@@ -8,7 +8,6 @@
 #'  @param	iter	numer of iterations in one round
 #'  @param	rounds		number of rounds (orthogonal views)
 #'  @param	initType		centroid initialization via Random or KMeans++
-#'  @param	random		use random or pseudo-random (seeded) generator?
 #'  @param	verbose		verbose output?
 #'
 #'  @return	a list consisting of
@@ -16,8 +15,8 @@
 #'	cluster 	these are the labels for the resulting clustering (as a std::vector of NumericVector)
 #'	obj			this is a vector with the final objective value for each round
 #'
-orthoKMeansTrainCpp <- function(x, rounds = 1L, k = 3L, iter = 100L, initType = 0L, random = FALSE, verbose = FALSE) {
-    .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', x, rounds, k, iter, initType, random, verbose)
+orthoKMeansTrainCpp <- function(x, rounds = 1L, k = 3L, iter = 100L, initType = 0L, verbose = FALSE) {
+    .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', x, rounds, k, iter, initType, verbose)
 }
 
 #'  K-Means prediction using yakmo library

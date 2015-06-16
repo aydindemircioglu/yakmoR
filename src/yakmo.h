@@ -466,32 +466,12 @@ namespace yakmo
     //   D. Arthur and S. Vassilvitskii. k-means++: the advantages of careful seeding. SODA (2007)
     void init () {
       struct rng_t {
-#ifdef USE_TR1_MT19937
-        std::variate_generator <std::mt19937,
-                                     std::uniform_real <> > gen;
-        rng_t (const bool r) : gen (r ? std::mt19937 (std::random_device () ()) : std::mt19937 (), std::uniform_real <> (0, 1)) {}
-        fl_t operator () () { return gen (); }
-#elif defined (USE_MT19937)
-        std::uniform_real_distribution <> dist;
-        std::mt19937 mt;
-        rng_t (const bool r) : dist (), mt (r ? std::mt19937 (std::random_device () ()) : std::mt19937 ()) {}
-        fl_t operator () () { return dist (mt); }
-#else
-        size_t x, y, z, w;
-        static size_t init () {
-          static size_t seed (static_cast <size_t> (std::time (0))), offset (0);
-          // multiplier taken from Knuth TAOCP Vol2. 3rd Ed. P.106.
-          return seed = 1812433253UL * (seed ^ (seed >> 30)) + ++offset;
-        }
-        rng_t (const bool r) : x (r ? init () : 123456789), y (r ? init () : 362436069), z (r ? init () : 521288629), w (r ? init () : 88675123) {}
-        size_t gen () { // Xorshift RNG; http://www.jstatsoft.org/v08/i14/paper
-          size_t t = (x ^ (x << 11)); x = y; y = z; z = w;
-          return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
-        }
+        // for compatibility we keep that random thing
+		rng_t (const bool r){}
+        
         fl_t operator () () {
-          return static_cast <fl_t> (gen () / static_cast <long double> (std::numeric_limits <size_t>::max ()));
+			return R::runif(0,1);
         }
-#endif
       } rng (_opt.random);
       //
 #ifdef USE_HASH

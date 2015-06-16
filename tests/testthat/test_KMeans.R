@@ -84,7 +84,9 @@ test_that("KMeans predicts as expected on synthetical dataset", {
 	set.seed(100)
 	x <- matrix(rnorm(25000, mean=0.5, sd=1), ncol=5)
 	E = yakmoR::orthoKMeansPredict (x = x, obj = obj, verbose = TRUE)
-		
+	
+	print( head(E$cluster))
+	stop()
 	# just a quick check on a few entires
 	clusterhead1 = c(5, 2, 1, 3, 7, 3, 0, 3, 2, 5, 3, 3, 5, 5, 0, 3, 0, 6, 5)
 	clustertail1 = c(6, 3, 6, 4, 2, 6, 3, 0, 2, 2, 4, 4, 3, 6, 5, 2, 6, 1, 3)	

@@ -44,7 +44,6 @@ using namespace yakmo;
 //'  @param	iter	numer of iterations in one round
 //'  @param	rounds		number of rounds (orthogonal views)
 //'  @param	initType		centroid initialization via Random or KMeans++
-//'  @param	random		use random or pseudo-random (seeded) generator?
 //'  @param	verbose		verbose output?
 //'
 //'  @return	a list consisting of
@@ -59,7 +58,6 @@ List orthoKMeansTrainCpp (
 	unsigned int k = 3,
 	unsigned int iter = 100,
 	unsigned int initType = 0,
-	bool random = false,
 	bool verbose = false
 )
 {
@@ -70,7 +68,6 @@ List orthoKMeansTrainCpp (
 	// initalize the options
 	if (verbose == true) {
 		Rcout << "Parameters:\n";
-		Rcout << "\trandom: \t" << random << "\n";
 		Rcout<<"\tk: \t\t" << k << "\n";
  		Rcout<<"\titerations: \t" << iter<< "\n";
 		Rcout<<"\trounds: \t" << rounds << "\n";
@@ -86,7 +83,6 @@ List orthoKMeansTrainCpp (
 	opt.k = k;
 	opt.iter = iter;
 	opt.m = rounds;
-	opt.random = random;
 	opt.init = RANDOM;
 	if (initType == 1)
 		opt.init = KMEANSPP;
