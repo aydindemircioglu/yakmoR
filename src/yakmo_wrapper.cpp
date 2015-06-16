@@ -96,7 +96,7 @@ List orthoKMeansTrainCpp (
 		opt.verbosity = 1;
 
 	// first do a check for k and number of rows
-	if (x.rows() <= opt.k) {
+	if (x.rows() <= (int) opt.k) {
 		stringstream s;
 		s << "Not enough data points (obtained " << x.rows() << ") to create " << k << "clusters!\n"; 
 		Rcpp::stop(s.str().c_str());
@@ -115,10 +115,10 @@ List orthoKMeansTrainCpp (
 	
 	// actually, we would rather not convert, but i want to change yakmo.h
 	// as little as possible. so this way is somewhat easier.
-	for (size_t e = 0; e < x.rows(); e++) {
+	for (int e = 0; e < x.rows(); e++) {
 		tmpS.str(std::string());
 		
-		for (size_t j = 0; j < x.cols(); j++) {
+		for (int j = 0; j < x.cols(); j++) {
 			tmpS << j << ":" << std::setprecision(16) << x (e, j);
 				tmpS << " ";
 		}
@@ -267,14 +267,14 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 	
 	// load data first
 	std::vector <kmeans::node_t> body;
-	for (int i = 0; i < centers.size(); ++i) {
+	for (uint i = 0; i < centers.size(); ++i) {
 		// create a new kmeans object
 		kmeans* km = new kmeans (opt);
 		km -> nf() = nf;
 		for (int e = 0; e < centers[i].rows(); e++) {
 			tmpS.str(std::string());
 			
-			for (uint j = 0; j < centers[i].cols(); j++) {
+			for (int j = 0; j < centers[i].cols(); j++) {
 				tmpS << j << ":" << std::setprecision(16) << centers[i](e, j);
 				tmpS << " ";
 			}
