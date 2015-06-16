@@ -1,6 +1,12 @@
 // yakmo -- yet another k-means via orthogonalization
 //  $Id: yakmo.h 1866 2015-01-21 10:25:43Z ynaga $
 // Copyright (c) 2012-2015 Naoki Yoshinaga <ynaga@tkl.iis.u-tokyo.ac.jp>
+
+
+#ifdef WIN32
+#define _GNU_SOURCE
+#endif
+
 #include <getopt.h>
 #include <stdint.h>
 #include <ctime>
@@ -103,9 +109,7 @@ namespace yakmo
   static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
 #ifdef __APPLE__
     if ((line = fgetln (fp, &read)) == NULL) return false;
-#elif WIN32
-	if ((line = fgetln (fp, &read)) == NULL) return false;
-	#else
+#else
     static ssize_t read_ = 0; static size_t size = 0; // static helps inlining
     if ((read_ = getline (&line, &size, fp)) == -1) return false;
     read = read_;
