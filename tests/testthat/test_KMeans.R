@@ -6,13 +6,11 @@ test_that("KMeans trains as expected on synthetical dataset", {
 	
 	set.seed(101)
 	k <- 8
-	x <- matrix(rnorm(50, mean=0.5, sd=1), ncol=5)
+	x <- matrix(rnorm(25000, mean=0.5, sd=1), ncol=5)
 	print(sum(x))
 	E = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = TRUE)
-	print(E)
-	
-	return(0)
-#	dump("E", "A")
+
+	dump("E", "/tmp/A")
 	
 	centers1 = c(-0.773127221855639, 0.659700086388155, 0.329083376361123, 
     1.49625118777897, 0.873625000244238, -0.117523595254004, 
@@ -47,7 +45,7 @@ test_that("KMeans trains as expected on synthetical dataset", {
 	
 	expect_equal (array(E$centers[[4]]), array(centers4))
 	
-	stop()
+	return(0)
     
 	# just a quick check on a few entires
 	expect_equal (E$centers[[4]][1,5], 0.0106450917141308)
@@ -129,7 +127,7 @@ test_that("KMeans predicts as expected on synthetical dataset", {
 	E = yakmoR::orthoKMeansPredict (x = x, obj = obj, verbose = TRUE)
 	
 	print( head(E$cluster))
-	stop()
+	return(0)
 	# just a quick check on a few entires
 	clusterhead1 = c(5, 2, 1, 3, 7, 3, 0, 3, 2, 5, 3, 3, 5, 5, 0, 3, 0, 6, 5)
 	clustertail1 = c(6, 3, 6, 4, 2, 6, 3, 0, 2, 2, 4, 4, 3, 6, 5, 2, 6, 1, 3)	
