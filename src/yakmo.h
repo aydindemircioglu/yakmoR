@@ -85,7 +85,7 @@ namespace yakmo
 {
   typedef size_t uint;
 
-  typedef double fl_t;
+  typedef long double fl_t;
 
   static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
 #ifdef __APPLE__
@@ -550,7 +550,6 @@ namespace yakmo
           const fl_t m   = std::max (_centroid[id0].next_d / 2, p.lo_d);
           if (p.up_d > m) {
             p.up_d = std::sqrt (p.calc_dist (_centroid[id0], _opt.dist));
-			Rcout << p.up_d << "\n";
 			if (p.up_d > m) {
               p.set_closest (_centroid, _opt.dist);
               if (p.id != id0) {
