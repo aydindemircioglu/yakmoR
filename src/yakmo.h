@@ -535,9 +535,9 @@ namespace yakmo
           update_bounds ();
         }
         if (i > 0) {
-//          if (_opt.verbosity > -1)
+          if (_opt.verbosity > -1)
             Rcout << i << "  obj = " << getObj () << " #moved = " << moved;
-//        else
+          else
             Rcout << ".";
         }
         if (! moved) break;
@@ -550,7 +550,8 @@ namespace yakmo
           const fl_t m   = std::max (_centroid[id0].next_d / 2, p.lo_d);
           if (p.up_d > m) {
             p.up_d = std::sqrt (p.calc_dist (_centroid[id0], _opt.dist));
-            if (p.up_d > m) {
+			Rcout << p.up_d << "\n";
+			if (p.up_d > m) {
               p.set_closest (_centroid, _opt.dist);
               if (p.id != id0) {
                 ++moved;
