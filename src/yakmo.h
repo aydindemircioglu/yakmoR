@@ -85,7 +85,7 @@ namespace yakmo
 {
   typedef size_t uint;
 
-  typedef float fl_t;
+  typedef double fl_t;
 
   static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
 #ifdef __APPLE__
@@ -535,9 +535,9 @@ namespace yakmo
           update_bounds ();
         }
         if (i > 0) {
-          if (_opt.verbosity > 1)
+//          if (_opt.verbosity > -1)
             Rcout << i << "  obj = " << getObj () << " #moved = " << moved;
-          else
+//        else
             Rcout << ".";
         }
         if (! moved) break;
