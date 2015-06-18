@@ -83,7 +83,7 @@ extern int   optind;
 
 namespace yakmo
 {
-  typedef unsigned int  uint;
+  typedef size_t uint;
 
   typedef double fl_t;
 
@@ -121,7 +121,7 @@ namespace yakmo
     uint     iter;
     bool     random;
     bool     normalize;
-    uint16_t output;
+    uint 		 output;
     uint     verbosity;
     mode_t   mode;
     option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), random (false), normalize (false), output (0), verbosity (1), mode (BOTH)
