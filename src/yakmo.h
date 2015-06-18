@@ -400,7 +400,7 @@ namespace yakmo
         int64_t fi = 0;
         for (; *p >= '0' && *p <= '9'; ++p) {
           fi *= 10, fi += *p, fi -= '0';
-          if (fi > std::numeric_limits <uint>::max ())
+          if (fi > std::numeric_limits <int64_t>::max ())
             errx (1, "overflow: %s", ex);
         }
         if (*p != ':') errx (1, "illegal feature index: %s", ex);
@@ -466,11 +466,10 @@ namespace yakmo
         do {
           switch (_opt.init) {
             case RANDOM:
-              c = static_cast <uint> (std::floor (rng () * _point.size ()));
+              c = (std::floor (rng () * _point.size ()));
               break;
             case KMEANSPP:
-              c = static_cast <uint>
-                  (i == 0 ?
+              c = (i == 0 ?
                    std::floor (rng () * _point.size ()) :
                    std::distance (r.begin (),
                                   std::lower_bound (r.begin (), r.end (), obj * rng ())));
@@ -528,7 +527,7 @@ namespace yakmo
     }
     void run () {
       init ();
-      uint moved = static_cast <uint> (_point.size ());
+      uint moved =  (_point.size ());
       for (uint i = 0; i <= _opt.iter; ++i) { // find neighbour center
         if (moved) {
           for (uint j = 0; j < _opt.k; ++j) // move center
@@ -627,7 +626,7 @@ namespace yakmo
         while (ex != ex_end && ! isspace (*ex)) ++ex;
         if (! test_on_other_data) {
           char* copy = new char[ex - line + 1];
-          std::memcpy (copy, line, static_cast <size_t> (ex - line));
+          std::memcpy (copy, line,  (ex - line));
           copy[ex - line] = '\0';
           label.push_back (copy);
           if (output == 2) p2c.push_back (std::vector <uint> ());
@@ -740,7 +739,7 @@ namespace yakmo
         char* ex (line), *ex_end (line + read - 1);
         while (ex != ex_end && ! isspace (*ex)) ++ex;
         char* copy = new char[ex - line + 1];
-        std::memcpy (copy, line, static_cast <size_t> (ex - line));
+        std::memcpy (copy, line, (ex - line));
         copy[ex - line] = '\0';
         label.push_back (copy);
         while (isspace (*ex)) ++ex;
