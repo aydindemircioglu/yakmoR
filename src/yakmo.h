@@ -100,8 +100,8 @@ namespace yakmo
   }
   static bool isspace (const char p) { return p == ' ' || p == '\t'; }
   template <typename T> T strton (const char* s, char** error) {
-    const int64_t  ret  = static_cast <int64_t>  (std::strtoll  (s, error, 10));
-    const uint64_t retu = static_cast <uint64_t> (std::strtoull (s, error, 10));
+    const int64_t  ret  =  (int64_t)  (std::strtoll  (s, error, 10));
+	const uint64_t retu = (uint64_t)  (std::strtoull (s, error, 10));
     if (std::numeric_limits <T>::is_specialized &&
         (ret  < static_cast <int64_t>  (std::numeric_limits <T>::min ()) ||
          retu > static_cast <uint64_t> (std::numeric_limits <T>::max ())))
@@ -314,7 +314,7 @@ namespace yakmo
         switch (dist) {
           case EUCLIDEAN:
             for (uint i = 0; i <= _nf; ++i) {
-              const fl_t v = _sum[i] / static_cast <fl_t> (_nelm);
+              const fl_t v = _sum[i] / (fl_t) (_nelm);
               delta += (v - _dv[i]) * (v - _dv[i]);
               _norm += v * v;
               _dv[i] = v;
@@ -405,8 +405,8 @@ namespace yakmo
         }
         if (*p != ':') errx (1, "illegal feature index: %s", ex);
         ++p;
-        const fl_t v = static_cast <fl_t> (std::strtod (p, &p));
-        tmp.push_back (node_t (static_cast <uint> (fi), v));
+        const fl_t v = (fl_t) (std::strtod (p, &p));
+        tmp.push_back (node_t ( (uint) (fi), v));
         norm += v * v;
         while (isspace (*p)) ++p;
       }
