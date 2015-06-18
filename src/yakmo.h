@@ -85,7 +85,7 @@ namespace yakmo
 {
   typedef size_t uint;
 
-  typedef double fl_t;
+  typedef float fl_t;
 
   static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
 #ifdef __APPLE__
@@ -347,7 +347,7 @@ namespace yakmo
         std::fprintf (fp, "\n");
       }
       /// --- 
-      std::vector<double> print () const {
+      std::vector<fl_t> print () const {
 		std::vector<fl_t> r (_size);
 		for (uint i = 0; i < _size; ++i) {
 			r[_body[i].idx] = _body[i].val;
