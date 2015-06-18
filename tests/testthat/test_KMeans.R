@@ -7,6 +7,7 @@ test_that("KMeans trains as expected on synthetical dataset", {
 	set.seed(101)
 	k <- 8
 	x <- matrix(rnorm(25000, mean=0.5, sd=1), ncol=5)
+	print(sum(x))
 	E = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = TRUE)
 
 	dump("E", "A")
