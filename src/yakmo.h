@@ -83,9 +83,9 @@ extern int   optind;
 
 namespace yakmo
 {
-  typedef size_t uint;
+  typedef uint32_t  uint;
 
-  typedef long double fl_t;
+  typedef double fl_t;
 
   static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
 #ifdef __APPLE__
