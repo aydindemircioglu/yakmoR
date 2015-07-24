@@ -1,2 +1,2 @@
-PKG_CXXFLAGS=-ffloat-store
+PKG_CXXFLAGS=-ffloat-store -std=c++0x
 
