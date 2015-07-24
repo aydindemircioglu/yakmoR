@@ -15,6 +15,13 @@
 #include <vector>
 #include <algorithm>
 
+
+#include <sys/types.h>
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
+
+
 #include "errx_dummy.h"
 #include <Rcpp.h>
 using namespace Rcpp;
