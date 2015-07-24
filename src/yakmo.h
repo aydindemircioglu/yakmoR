@@ -83,7 +83,7 @@ extern int   optind;
 
 namespace yakmo
 {
-  typedef uint64_t  uint;
+  typedef long unsigned int uint;
 
   typedef double fl_t;
 
