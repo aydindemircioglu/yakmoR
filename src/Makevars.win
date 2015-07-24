@@ -1,2 +1,1 @@
-PKG_CXXFLAGS=-ffloat-store -std=c++0x
-
+PKG_CXXFLAGS=-ffloat-store -msse2 -mfpmath=sse
