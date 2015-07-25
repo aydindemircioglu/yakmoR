@@ -206,11 +206,11 @@ namespace yakmo
   }
   static bool isspace (const char p) { return p == ' ' || p == '\t'; }
   template <typename T> T strton (const char* s, char** error) {
-    const int64_t  ret  =  (int64_t)  (std::strtoll  (s, error, 10));
-	const uint64_t retu = (uint64_t)  (std::strtoull (s, error, 10));
+    const ssize_t  ret  =  (ssize_t)  (std::strtoll  (s, error, 10));
+	const size_t retu = (size_t)  (std::strtoull (s, error, 10));
     if (std::numeric_limits <T>::is_specialized &&
-        (ret  < static_cast <int64_t>  (std::numeric_limits <T>::min ()) ||
-         retu > static_cast <uint64_t> (std::numeric_limits <T>::max ())))
+        (ret  < static_cast <ssize_t>  (std::numeric_limits <T>::min ()) ||
+         retu > static_cast <size_t> (std::numeric_limits <T>::max ())))
       errx (1, "overflow: %s", s);
     return static_cast <T> (ret);
   }
@@ -503,10 +503,10 @@ namespace yakmo
       fl_t norm = 0;
       char* p = ex;
       while (p != ex_end) {
-        int64_t fi = 0;
+        ssize_t fi = 0;
         for (; *p >= '0' && *p <= '9'; ++p) {
           fi *= 10, fi += *p, fi -= '0';
-          if (fi > std::numeric_limits <int64_t>::max ())
+          if (fi > std::numeric_limits <ssize_t>::max ())
             errx (1, "overflow: %s", ex);
         }
         if (*p != ':') errx (1, "illegal feature index: %s", ex);
