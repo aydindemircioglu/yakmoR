@@ -349,7 +349,7 @@ namespace yakmo
       { while (! empty () && back ().idx > nf) --_size; }
       void project (const centroid_t& c) {
         const fl_t norm_ip = calc_ip (c) / c.norm ();
-		std::cout << "PRO: " << std::setprecision(16) << norm_ip << "\n";
+		std::cout << "PRO: " << std::setprecision(24) << norm_ip << "\n";
 		up_d = lo_d = id = 0; _norm = 0; // reset
         for (uint i = 0; i < _size; ++i) {
           _body[i].val -= c[_body[i].idx] * norm_ip;
