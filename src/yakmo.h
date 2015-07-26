@@ -347,22 +347,14 @@ namespace yakmo
       }
       void shrink (const uint nf)
       { while (! empty () && back ().idx > nf) --_size; }
-
-		void project (const centroid_t& c) {
-        
-			const long double norm_ip = calc_ip (c) / c.norm ();
-			
-			up_d = lo_d = id = 0;
-			_norm = 0; // reset
-			
-			for (uint i = 0; i < _size; ++i) {
-				_body[i].val -= c[_body[i].idx] * norm_ip;
-//				_body[i].val -= (c[_body[i].idx] * calc_ip (c)) / c.norm ();
-				_norm += _body[i].val * _body[i].val;
-			}
-			
+      void project (const centroid_t& c) {
+        const long double norm_ip = calc_ip (c) / c.norm ();
+        up_d = lo_d = id = 0; _norm = 0; // reset
+        for (uint i = 0; i < _size; ++i) {
+          _body[i].val -= c[_body[i].idx] * norm_ip;
+          _norm += _body[i].val * _body[i].val;
+        }
       }
-      
       const node_t* begin () const { return _body; }
       const node_t* end   () const { return _body + _size; }
       fl_t    norm  () const { return _norm; }
@@ -434,7 +426,7 @@ namespace yakmo
         switch (dist) {
           case EUCLIDEAN:
             for (uint i = 0; i <= _nf; ++i) {
-              const fl_t v = _sum[i] / (fl_t) (_nelm); //XXX
+              const fl_t v = _sum[i] / (fl_t) (_nelm);
               delta += (v - _dv[i]) * (v - _dv[i]);
               _norm += v * v;
               _dv[i] = v;
@@ -537,7 +529,7 @@ namespace yakmo
         norm = std::sqrt (norm);
         for (std::vector <node_t>::iterator it = tmp.begin ();
              it != tmp.end (); ++it)
-          it->val /= norm; //XXX
+          it->val /= norm;
         norm = 1.0;
       }
       return point_t (&tmp[0], static_cast <uint> (tmp.size ()), norm); // expect RVO
@@ -674,7 +666,7 @@ namespace yakmo
         for (uint j = 0; j < _point.size (); ++j) { // for all points
           point_t&   p  = _point[j];
           const uint id0 = p.id;
-          const fl_t m   = std::max (_centroid[id0].next_d / 2.0, p.lo_d);
+          const fl_t m   = std::max (_centroid[id0].next_d / 2, p.lo_d);
           if (p.up_d > m) {
             p.up_d = std::sqrt (p.calc_dist (_centroid[id0], _opt.dist));
 			if (p.up_d > m) {
