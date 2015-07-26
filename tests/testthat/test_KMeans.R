@@ -1,4 +1,4 @@
-context("KMeans")	
+context("KMeans_Crossplatform")	
 
 
 test_that("KMeans trains as expected on synthetical dataset", {
@@ -7,8 +7,8 @@ test_that("KMeans trains as expected on synthetical dataset", {
 	set.seed(101)
 	k <- 8
 	x <- matrix(rnorm(25000, mean=0.5, sd=1), ncol=5)
-	print(sum(x))
-	E = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = TRUE)
+	#print(sum(x))
+	E = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = FALSE)
 
 #	dump("E", "/tmp/A")
 	
@@ -66,7 +66,7 @@ test_that("KMeans trains as expected on synthetical dataset", {
 
 
 	# test that it works with allmodels 
-	E = yakmoR::orthoKMeansTrain(x, k = k, rounds = 2, verbose = TRUE)
+	E = yakmoR::orthoKMeansTrain(x, k = k, rounds = 2, verbose = FALSE)
 	
 #	dump("E", "/tmp/B")
 
@@ -135,83 +135,42 @@ test_that("KMeans predicts as expected on synthetical dataset", {
 	set.seed(101)
 	k <- 8
 	x <- matrix(rnorm(25000, mean=0.5, sd=1), ncol=5)
-	obj = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = TRUE)
+	obj = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = FALSE)
 
 	
 	# check predictions for all rounds are done, data is under test/data/predict.data
 	# get true output by 
 	set.seed(100)
 	x <- matrix(rnorm(25000, mean=0.5, sd=1), ncol=5)
-	E = yakmoR::orthoKMeansPredict (x = x, obj = obj, verbose = TRUE)
+	E = yakmoR::orthoKMeansPredict (x = x, obj = obj, verbose = FALSE)
 	
-	print( head(E$cluster))
-	return(0)
+# 	for (i in 1:4) {
+# 		u = E$cluster[1:19,i]
+# 		dump(c("u"), file = "/tmp/C", append = TRUE)
+# 		t = E$cluster[4982:5000,i]
+# 		dump(c("t"), file = "/tmp/C", append =  TRUE)
+# 	}
+		
 	# just a quick check on a few entires
-	clusterhead1 = c(5, 2, 1, 3, 7, 3, 0, 3, 2, 5, 3, 3, 5, 5, 0, 3, 0, 6, 5)
-	clustertail1 = c(6, 3, 6, 4, 2, 6, 3, 0, 2, 2, 4, 4, 3, 6, 5, 2, 6, 1, 3)	
+	clusterhead1 = 	c(7, 4, 7, 3, 2, 1, 1, 6, 0, 7, 6, 6, 5, 2, 4, 1, 1, 7, 2)
+	clustertail1 = 		c(3, 6, 3, 1, 1, 2, 1, 3, 0, 7, 5, 5, 6, 4, 2, 0, 3, 7, 1)
 	expect_equal (E$cluster[1:19,1], clusterhead1)
  	expect_equal (E$cluster[4982:5000,1], clustertail1)
 
-	clusterhead2 = c(2, 7, 7, 1, 5, 6, 3, 2, 2, 2, 2, 6, 1, 1, 6, 0, 3, 2, 5)
-	clustertail2 = c(0, 6, 4, 6, 5, 5, 3, 0, 3, 2, 4, 2, 1, 1, 2, 3, 1, 5, 3)
+	clusterhead2 = c(1, 6, 0, 5, 0, 5, 2, 3, 6, 1, 4, 5, 5, 3, 2, 1, 4, 6, 7)
+	clustertail2 = c(0, 2, 3, 1, 6, 0, 7, 4, 1, 1, 5, 1, 5, 3, 1, 5, 5, 7, 7)
 	expect_equal (E$cluster[1:19,2], clusterhead2)
  	expect_equal (E$cluster[4982:5000,2], clustertail2)
 
-	clusterhead3 = c(4, 0, 1, 1, 4, 5, 5, 0, 0, 7, 7, 5, 1, 0, 0, 7, 7, 7, 2)
-	clustertail3 = c(5, 5, 1, 4, 4, 1, 1, 1, 1, 1, 5, 7, 6, 3, 2, 5, 7, 0, 1)
+	clusterhead3 = c(5, 2, 0, 7, 7, 7, 6, 2, 2, 5, 2, 4, 3, 7, 7, 2, 1, 6, 3)
+	clustertail3 = c(6, 5, 7, 4, 2, 0, 1, 4, 0, 3, 0, 7, 6, 6, 3, 1, 0, 6, 1)
 	expect_equal (E$cluster[1:19,3], clusterhead3)
  	expect_equal (E$cluster[4982:5000,3], clustertail3)
 	
-	clusterhead4 = c(6, 0, 4, 4, 1, 1, 1, 4, 1, 4, 6, 7, 6, 3, 4, 6, 0, 1, 0)
-	clustertail4 = c(7, 7, 4, 3, 3, 4, 5, 5, 4, 5, 5, 4, 2, 3, 3, 4, 4, 2, 5)
+	clusterhead4 = c(3, 2, 3, 3, 3, 2, 0, 1, 7, 3, 2, 1, 0, 3, 6, 7, 2, 4, 1)
+	clustertail4 = c(1, 2, 1, 6, 7, 0, 2, 4, 3, 5, 4, 3, 0, 0, 7, 7, 1, 7, 2)
 	expect_equal (E$cluster[1:19,4], clusterhead4)
  	expect_equal (E$cluster[4982:5000,4], clustertail4)
-	
-# tail
-# 
-# 6 0 5 7
-# 3 6 5 7
-# 6 4 1 4
-# 4 6 4 3
-# 2 5 4 3
-# 6 5 1 4
-# 3 3 1 5
-# 0 0 1 5
-# 2 3 1 4
-# 2 2 1 5
-# 4 4 5 5
-# 4 2 7 4
-# 3 1 6 2
-# 6 1 3 3
-# 5 2 2 3
-# 2 3 5 4
-# 6 1 7 4
-# 1 5 0 2
-# 3 3 1 5
-
-
-# 	
-# 5 2 4 6
-# 2 7 0 0
-# 1 7 1 4
-# 3 1 1 4
-# 7 5 4 1
-# 3 6 5 1
-# 0 3 5 1
-# 3 2 0 4
-# 2 2 0 1
-# 5 2 7 4
-# 3 2 7 6
-# 3 6 5 7
-# 5 1 1 6
-# 5 1 0 3
-# 0 6 0 4
-# 3 0 7 6
-# 0 3 7 0
-# 6 2 7 1
-# 5 5 2 0
-	
-
 	
 })
 

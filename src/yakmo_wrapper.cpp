@@ -87,10 +87,11 @@ List orthoKMeansTrainCpp (
 	if (initType == 1)
 		opt.init = KMEANSPP;
 	
-	
-	if (verbose == true) 
+	if (verbose == true) {
+		Rcout << "Turning on verbosity.\n";
 		opt.verbosity = 1;
-
+	}
+		
 	// first do a check for k and number of rows
 	if (x.rows() <= (signed long int) opt.k) {
 		stringstream s;
@@ -142,7 +143,7 @@ List orthoKMeansTrainCpp (
 	Rcpp::NumericVector obj (opt.m);
 	
 	for (unsigned long int i = 1; i <= opt.m; ++i) {
-		if (verbose) Rcout << "kmeans #" << i << "\n";
+		if (verbose == TRUE) Rcout << "kmeans #" << i << "\n";
 		if (i >= 2) {
 			kmeans* km_ = _kms.back (); // last of mohikans
 			// project

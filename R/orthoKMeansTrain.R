@@ -49,15 +49,12 @@ orthoKMeansTrain <- function(x = NULL,
 	if (verbose == TRUE)
 		message ("Calling C++ function.")
 
-	random = FALSE
-	
 	r = .Call('yakmoR_orthoKMeansTrainCpp', PACKAGE = 'yakmoR', 
 		x = x, 
 		rounds = rounds, 
 		k = k, 
 		iter = iter.max, 
 		initType = initType,
-		random = random,
 		verbose = verbose)
 
 	# wrap list as object

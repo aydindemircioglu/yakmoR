@@ -236,7 +236,7 @@ namespace yakmo
     uint 		 output;
     uint     verbosity;
     mode_t   mode;
-    option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), random (false), normalize (false), output (0), verbosity (1), mode (BOTH)
+    option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), random (false), normalize (false), output (0), verbosity (0), mode (BOTH)
     { set (argc, argv); }
     void set (int argc, char** argv) { // getOpt
       if (argc == 0) return;
@@ -654,12 +654,12 @@ namespace yakmo
           update_bounds ();
         }
         if (i > 0) {
-          if (_opt.verbosity > -1)
+          if (_opt.verbosity == 1) {
             Rcout << i << std::setprecision(16) << "  obj = " << getObj () << " #moved = " << moved << "\n";
-          else
-            Rcout << ".";
+		  }
+//          else
+//          Rcout << ".";
         }
-        Rcout << i << std::setprecision(16) << "  obj = " << getObj () << " #moved = " << moved << "\n";
 		if (! moved) break;
         for (uint j = 0; j < _opt.k; ++j)
           _centroid[j].set_closest (_centroid, _opt.dist);
@@ -681,14 +681,16 @@ namespace yakmo
           }
         }
       }
-      if (moved > 0)
-		Rcout <<  "break";
-	  else
-		Rcout <<  "done";
-      if (_opt.verbosity == 1)
-        Rcout << "; obj = "<< getObj () << "\n";
-      else
-        Rcout << ".\n";
+		if (_opt.verbosity == 1) {
+			if (moved > 0)
+				Rcout <<  "break";
+			else
+				Rcout <<  "done";
+			if (_opt.verbosity == 1)
+				Rcout << "; obj = "<< getObj () << "\n";
+			else
+				Rcout << ".\n";
+		}
     }
   private:
     const option _opt;
