@@ -257,8 +257,8 @@ namespace yakmo
           case 'O': output    = strton <uint16_t> (optarg, &err); break;
           case 'v': verbosity = strton <uint> (optarg, &err); break;
             // misc
-          case 'h': printCredit (); printHelp (); std::exit (0);
-          default:  printCredit (); std::exit (0);
+		  case 'h': printCredit (); printHelp (); Rcpp::stop("Printed help, exiting.");
+		  default:  printCredit (); Rcpp::stop("Printed credits, exiting.");
     }
         if (err && *err)
           errx (1, "unrecognized option value: %s", optarg);
@@ -714,23 +714,23 @@ namespace yakmo
                 const std::vector <std::vector <uint> >& c2p) {
       for (uint j = 0; j < c2p.size (); ++j) {
         if (_opt.m == 1)
-          std::fprintf (stdout, "c%d", j);
+			Rcout << "c" << j;
         else
-          std::fprintf (stdout, "c%d_%d", i, j);
+			Rcout << "c" << i << "_" << j;
         for (std::vector <uint>::const_iterator it = c2p[j].begin ();
              it != c2p[j].end (); ++it)
-          std::fprintf (stdout, " %s", label[*it]);
-        std::fprintf (stdout, "\n");
+			 Rcout << label[*it];
+		Rcout << "\n";
       }
     }
     void print (const std::vector <const char*>& label,
                 const std::vector <std::vector <uint> >& p2c) {
       for (uint j = 0; j < label.size (); ++j) {
-        std::fprintf (stdout, "%s", label[j]);
-        for (std::vector <uint>::const_iterator it = p2c[j].begin ();
-             it != p2c[j].end (); ++it)
-          std::fprintf (stdout, " %d", *it);
-        std::fprintf (stdout, "\n");
+		  Rcout << label[j];
+			for (std::vector <uint>::const_iterator it = p2c[j].begin ();
+				it != p2c[j].end (); ++it)
+				Rcout << *it;
+			Rcout << "\n";
       }
     }
     void train_from_file (const char* train, const uint iter, const uint output = 0, const bool test_on_other_data = false, const bool instant = false) {
