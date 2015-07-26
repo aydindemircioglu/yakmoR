@@ -5,7 +5,7 @@
 \title{K-Means using yakmo library}
 \usage{
 orthoKMeansTrainCpp(x, rounds = 1L, k = 3L, iter = 100L, initType = 0L,
-  random = FALSE, verbose = FALSE)
+  verbose = FALSE)
 }
 \arguments{
 \item{x}{data matrix}
@@ -17,8 +17,6 @@ orthoKMeansTrainCpp(x, rounds = 1L, k = 3L, iter = 100L, initType = 0L,
 \item{iter}{numer of iterations in one round}
 
 \item{initType}{centroid initialization via Random or KMeans++}
-
-\item{random}{use random or pseudo-random (seeded) generator?}
 
 \item{verbose}{verbose output?}
 }

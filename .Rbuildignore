@@ -2,7 +2,6 @@
 staticdocs
 todo-files
 tools
-
 .gitignore
 .travis.yml
 ^.*tar.gz$

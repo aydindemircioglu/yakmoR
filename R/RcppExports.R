@@ -4,9 +4,9 @@
 #'  K-Means using yakmo library
 #' 
 #'  @param	x		data matrix 
+#'  @param	rounds		number of rounds (orthogonal views)
 #'  @param	k		number of clusters
 #'  @param	iter	numer of iterations in one round
-#'  @param	rounds		number of rounds (orthogonal views)
 #'  @param	initType		centroid initialization via Random or KMeans++
 #'  @param	verbose		verbose output?
 #'
