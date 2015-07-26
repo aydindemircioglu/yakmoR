@@ -192,7 +192,7 @@ namespace yakmo
 {
   typedef long unsigned int uint;
 
-  typedef long double fl_t;
+  typedef double fl_t;
 
   static inline bool getLine (FILE*& fp, char*& line, unsigned long int& read) {
 #ifdef __APPLE__
@@ -350,7 +350,7 @@ namespace yakmo
 
 		void project (const centroid_t& c) {
         
-			const fl_t norm_ip = calc_ip (c) / c.norm ();
+			const long double norm_ip = calc_ip (c) / c.norm ();
 			
 			up_d = lo_d = id = 0;
 			_norm = 0; // reset
