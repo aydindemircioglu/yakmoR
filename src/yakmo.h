@@ -348,12 +348,14 @@ namespace yakmo
       void shrink (const uint nf)
       { while (! empty () && back ().idx > nf) --_size; }
       void project (const centroid_t& c) {
-        const  long double norm_ip = calc_ip (c) / c.norm ();
+        const double norm_ip = calc_ip (c) / c.norm ();
+		long double n = 0.0;
         up_d = lo_d = id = 0; _norm = 0; // reset
         for (uint i = 0; i < _size; ++i) {
           _body[i].val -= c[_body[i].idx] * norm_ip;
-          _norm += _body[i].val * _body[i].val;
+          n += _body[i].val * _body[i].val;
         }
+        _norm = n;
       }
       const node_t* begin () const { return _body; }
       const node_t* end   () const { return _body + _size; }
