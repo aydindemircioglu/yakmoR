@@ -350,14 +350,14 @@ namespace yakmo
 
 		void project (const centroid_t& c) {
         
-//			const fl_t norm_ip = calc_ip (c) / c.norm ();
+			const fl_t norm_ip = calc_ip (c) / c.norm ();
 			
 			up_d = lo_d = id = 0;
 			_norm = 0; // reset
 			
 			for (uint i = 0; i < _size; ++i) {
-//				_body[i].val -= c[_body[i].idx] * norm_ip;
-				_body[i].val -= (c[_body[i].idx] * calc_ip (c)) / c.norm ();
+				_body[i].val -= c[_body[i].idx] * norm_ip;
+//				_body[i].val -= (c[_body[i].idx] * calc_ip (c)) / c.norm ();
 				_norm += _body[i].val * _body[i].val;
 			}
 			
