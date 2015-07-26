@@ -231,7 +231,7 @@ namespace yakmo
     uint 		 output;
     uint     verbosity;
     mode_t   mode;
-    option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), random (false), normalize (false), output (0), verbosity (2), mode (BOTH)
+    option (int argc, char** argv) : com (argc ? argv[0] : "--"), train ("-"), model ("-"), test ("-"), dist (EUCLIDEAN), init (KMEANSPP), k (3), m (1), iter (100), random (false), normalize (false), output (0), verbosity (1), mode (BOTH)
     { set (argc, argv); }
     void set (int argc, char** argv) { // getOpt
       if (argc == 0) return;
@@ -518,7 +518,8 @@ namespace yakmo
         while (isspace (*p)) ++p;
       }
       std::sort (tmp.begin (), tmp.end ());
-      if (normalize) { // normalize
+	  Rcout << std::setprecision(16) << norm << ",";
+	  if (normalize) { // normalize
         norm = std::sqrt (norm);
         for (std::vector <node_t>::iterator it = tmp.begin ();
              it != tmp.end (); ++it)
@@ -557,7 +558,7 @@ namespace yakmo
         
         fl_t operator () () {
 			fl_t p = R::runif(0,1);
-			std::cout << std::setprecision(17) << p << ", ";
+			Rcout << std::setprecision(17) << p << ", ";
 			return (p);
         }
       } rng (_opt.random);
