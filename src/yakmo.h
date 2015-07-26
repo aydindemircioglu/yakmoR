@@ -192,7 +192,7 @@ namespace yakmo
 {
   typedef long unsigned int uint;
 
-  typedef double fl_t;
+  typedef long double fl_t;
 
   static inline bool getLine (FILE*& fp, char*& line, unsigned long int& read) {
 #ifdef __APPLE__
