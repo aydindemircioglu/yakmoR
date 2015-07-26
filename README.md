@@ -1,10 +1,19 @@
-a simple wrapper for the kmeans c++ library yakmo
+# yakmoR
 
-yakmo implements orthogonal k-means (hence its name). 
-in each round the next clustering is done on a subspace orthogonal
-to the clustercenters of the current clustering.
-To speed up the whole procedure, Greg Hamerlys faster k-means
+yakmoR is a simple wrapper for the K-Means C++ library 
+(see www.tkl.iis.u-tokyo.ac.jp/~ynaga/yakmo/) developed
+by Naoki Yoshinaga.
+
+yakmoR implements orthogonal K-Means. It can work in several rounds.
+In the first round, a normal K-Means is applied to the data.
+In each subsequent round, the next clustering is done on a subspace orthogonal
+to the centroids of the last clustering. This way one produces different
+views on the data.
+To speed up the whole procedure, Greg Hamerlys faster K-Means
 is utilized. Initilization can be done either classically (uniformly random)
 or by using the K-Means++ scheme.
 
 
+# Changelist
+
+-v0.1.0: Initial release.

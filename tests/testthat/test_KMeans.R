@@ -2,7 +2,7 @@ context("KMeans_Crossplatform")
 
 
 test_that("KMeans trains as expected on synthetical dataset", {
-	# generate synthetic data set (see stack overflow question), data is under tests/data/train.data
+	# generate synthetic data set (see some stack overflow question)
 	
 	set.seed(101)
 	k <- 8
@@ -138,7 +138,7 @@ test_that("KMeans predicts as expected on synthetical dataset", {
 	obj = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = FALSE)
 
 	
-	# check predictions for all rounds are done, data is under test/data/predict.data
+	# check predictions for all rounds are done
 	# get true output by 
 	set.seed(100)
 	x <- matrix(rnorm(25000, mean=0.5, sd=1), ncol=5)
