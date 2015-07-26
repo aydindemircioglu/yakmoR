@@ -54,10 +54,10 @@ using namespace yakmo;
 // [[Rcpp::export]]
 List orthoKMeansTrainCpp (
 	Rcpp::NumericMatrix x,
-	size_t rounds = 1,
-	size_t k = 3,
-	size_t iter = 100,
-	size_t initType = 0,
+	unsigned long int rounds = 1,
+	unsigned long int k = 3,
+	unsigned long int iter = 100,
+	unsigned long int initType = 0,
 	bool verbose = false
 )
 {
@@ -92,7 +92,7 @@ List orthoKMeansTrainCpp (
 		opt.verbosity = 1;
 
 	// first do a check for k and number of rows
-	if (x.rows() <= (ssize_t) opt.k) {
+	if (x.rows() <= (signed long int) opt.k) {
 		stringstream s;
 		s << "Not enough data points (obtained " << x.rows() << ") to create " << k << "clusters!\n"; 
 		Rcpp::stop(s.str().c_str());
@@ -111,10 +111,10 @@ List orthoKMeansTrainCpp (
 	
 	// actually, we would rather not convert, but i want to change yakmo.h
 	// as little as possible. so this way is somewhat easier.
-	for (ssize_t e = 0; e < x.rows(); e++) {
+	for (signed long int e = 0; e < x.rows(); e++) {
 		tmpS.str(std::string());
 		
-		for (ssize_t j = 0; j < x.cols(); j++) {
+		for (signed long int j = 0; j < x.cols(); j++) {
 			tmpS << j << ":" << std::setprecision(16) << x (e, j);
 				tmpS << " ";
 		}
@@ -141,7 +141,7 @@ List orthoKMeansTrainCpp (
 	// return values
 	Rcpp::NumericVector obj (opt.m);
 	
-	for (size_t i = 1; i <= opt.m; ++i) {
+	for (unsigned long int i = 1; i <= opt.m; ++i) {
 		if (verbose) Rcout << "kmeans #" << i << "\n";
 		if (i >= 2) {
 			kmeans* km_ = _kms.back (); // last of mohikans
@@ -169,10 +169,10 @@ List orthoKMeansTrainCpp (
 	std::vector<NumericMatrix> centers;
 
 	// extract clusters
-	for (size_t i = 0; i < _kms.size (); ++i) {
+	for (unsigned long int i = 0; i < _kms.size (); ++i) {
 		const std::vector <kmeans::centroid_t>& centroid = _kms[i]->centroid ();
 		NumericMatrix cc (centroid.size (), x.cols());
-		for (size_t j = 0; j < centroid.size (); ++j) {
+		for (unsigned long int j = 0; j < centroid.size (); ++j) {
 			NumericVector tmpN(x.rows());
 			tmpN = centroid[j].print();
 			cc (j, _) = tmpN;
@@ -190,15 +190,15 @@ List orthoKMeansTrainCpp (
 	// the last one as we somehow change the dataset?
 
 	// get back centroids and nf vector
-	size_t nf;
+	unsigned long int nf;
 	std::vector<kmeans::point_t> &pts = shadow -> point();
-	for (size_t i = 0; i < _kms.size (); ++i) {
+	for (unsigned long int i = 0; i < _kms.size (); ++i) {
 		kmeans* km =_kms[i];
 		
 		km->decompress ();
 		NumericVector cc (x.rows());
 		
-		for (size_t j = 0; j < pts.size (); ++j) {
+		for (unsigned long int j = 0; j < pts.size (); ++j) {
 			kmeans::point_t p = pts[j];
 			p.shrink (km->nf ());
 			p.set_closest (km->centroid (), opt.dist);
@@ -238,8 +238,8 @@ List orthoKMeansTrainCpp (
 // [[Rcpp::export]]
 List orthoKMeansPredictCpp (NumericMatrix x, 
 				   std::vector <NumericMatrix> centers,
-				   size_t nf,
-				   size_t k = 0,
+				   unsigned long int nf,
+				   unsigned long int k = 0,
 				   bool verbose = false	) {
 	
 	// temp stringstream
@@ -263,14 +263,14 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 	
 	// load data first
 	std::vector <kmeans::node_t> body;
-	for (size_t i = 0; i < centers.size(); ++i) {
+	for (unsigned long int i = 0; i < centers.size(); ++i) {
 		// create a new kmeans object
 		kmeans* km = new kmeans (opt);
 		km -> nf() = nf;
-		for (ssize_t e = 0; e < centers[i].rows(); e++) {
+		for (signed long int e = 0; e < centers[i].rows(); e++) {
 			tmpS.str(std::string());
 			
-			for (ssize_t j = 0; j < centers[i].cols(); j++) {
+			for (signed long int j = 0; j < centers[i].cols(); j++) {
 				tmpS << j << ":" << std::setprecision(16) << centers[i](e, j);
 				tmpS << " ";
 			}
@@ -294,10 +294,10 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 	std::vector <kmeans::point_t>     point;
 	body.clear();
 	
-	for (ssize_t e = 0; e < x.rows(); e++) {
+	for (signed long int e = 0; e < x.rows(); e++) {
 		tmpS.str(std::string());
 		
-		for (ssize_t j = 0; j < x.cols(); j++) {
+		for (signed long int j = 0; j < x.cols(); j++) {
 			tmpS << j << ":" << std::setprecision(16) << x (e, j);
 			tmpS << " ";
 		}
@@ -325,7 +325,7 @@ List orthoKMeansPredictCpp (NumericMatrix x,
 		km->decompress ();
 		NumericVector cc (x.rows());
 		
-		for (size_t j = 0; j < point.size (); ++j) {
+		for (unsigned long int j = 0; j < point.size (); ++j) {
 			kmeans::point_t p = point[j];
 			p.shrink (km -> nf());
 			p.set_closest (km->centroid (), opt.dist);
