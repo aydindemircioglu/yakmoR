@@ -18,4 +18,5 @@ SVMBr*tar.gz
 webpage/**
 *.R~
 inst/doc
-*.dll
+*.dllsymbols.rds
+*.tar.gz
