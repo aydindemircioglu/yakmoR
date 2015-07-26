@@ -10,7 +10,7 @@ test_that("KMeans trains as expected on synthetical dataset", {
 	print(sum(x))
 	E = yakmoR::orthoKMeansTrain (x = x, k = 8, rounds = 4, verbose = TRUE)
 
-	dump("E", "/tmp/A")
+#	dump("E", "/tmp/A")
 	
 	centers1 = c(-0.773127221855639, 0.659700086388155, 0.329083376361123, 
     1.49625118777897, 0.873625000244238, -0.117523595254004, 
@@ -68,7 +68,7 @@ test_that("KMeans trains as expected on synthetical dataset", {
 	# test that it works with allmodels 
 	E = yakmoR::orthoKMeansTrain(x, k = k, rounds = 2, verbose = TRUE)
 	
-	dump("E", "/tmp/B")
+#	dump("E", "/tmp/B")
 
 
 	centers1 = c(0.457783208292489, 
