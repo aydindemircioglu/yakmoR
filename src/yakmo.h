@@ -564,7 +564,8 @@ namespace yakmo
         
         fl_t operator () () {
 			fl_t p = R::runif(0,1);
-			Rcout << std::setprecision(17) << p << ", ";
+			// random numbers: 100% ok between 32/64bit and linux/windows
+			// Rcout << std::setprecision(17) << p << ", ";
 			return (p);
         }
       } rng (_opt.random);
@@ -652,11 +653,12 @@ namespace yakmo
         }
         if (i > 0) {
           if (_opt.verbosity > -1)
-            Rcout << i << "  obj = " << getObj () << " #moved = " << moved;
+            Rcout << i << std::setprecision(16) << "  obj = " << getObj () << " #moved = " << moved << "\n";
           else
             Rcout << ".";
         }
-        if (! moved) break;
+        Rcout << i << std::setprecision(16) << "  obj = " << getObj () << " #moved = " << moved << "\n";
+		if (! moved) break;
         for (uint j = 0; j < _opt.k; ++j)
           _centroid[j].set_closest (_centroid, _opt.dist);
         moved = 0;
