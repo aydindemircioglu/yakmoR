@@ -1,1 +1,1 @@
-PKG_CXXFLAGS=-ffloat-store 
+PKG_CXXFLAGS=-mfpmath=sse -msse2
