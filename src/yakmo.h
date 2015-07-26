@@ -347,15 +347,22 @@ namespace yakmo
       }
       void shrink (const uint nf)
       { while (! empty () && back ().idx > nf) --_size; }
-      void project (const centroid_t& c) {
-        const fl_t norm_ip = calc_ip (c) / c.norm ();
-		std::cout << "PRO: " << std::setprecision(24) << norm_ip << "\n";
-		up_d = lo_d = id = 0; _norm = 0; // reset
-        for (uint i = 0; i < _size; ++i) {
-          _body[i].val -= c[_body[i].idx] * norm_ip;
-          _norm += _body[i].val * _body[i].val;
-        }
+
+		void project (const centroid_t& c) {
+        
+//			const fl_t norm_ip = calc_ip (c) / c.norm ();
+			
+			up_d = lo_d = id = 0;
+			_norm = 0; // reset
+			
+			for (uint i = 0; i < _size; ++i) {
+//				_body[i].val -= c[_body[i].idx] * norm_ip;
+				_body[i].val -= (c[_body[i].idx] * calc_ip (c)) / c.norm ();
+				_norm += _body[i].val * _body[i].val;
+			}
+			
       }
+      
       const node_t* begin () const { return _body; }
       const node_t* end   () const { return _body + _size; }
       fl_t    norm  () const { return _norm; }
