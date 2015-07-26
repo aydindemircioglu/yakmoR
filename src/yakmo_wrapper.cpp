@@ -144,6 +144,7 @@ List orthoKMeansTrainCpp (
 	for (size_t i = 1; i <= opt.m; ++i) {
 		if (verbose) Rcout << "kmeans #" << i << "\n";
 		if (i >= 2) {
+			std::cout << "NEXT ROUND\n";
 			kmeans* km_ = _kms.back (); // last of mohikans
 			// project
 			std::vector <kmeans::point_t>& point_ = km_->point ();

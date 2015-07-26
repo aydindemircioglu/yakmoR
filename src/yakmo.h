@@ -354,6 +354,7 @@ namespace yakmo
           _body[i].val -= c[_body[i].idx] * norm_ip;
           _norm += _body[i].val * _body[i].val;
         }
+        std::cout << "PRO: " << std::setprecision(16) << _norm << "\n";
       }
       const node_t* begin () const { return _body; }
       const node_t* end   () const { return _body + _size; }
@@ -638,8 +639,9 @@ namespace yakmo
     fl_t getObj () const { // const
       fl_t obj = 0;
       for (std::vector <point_t>::const_iterator it = _point.begin ();
-           it != _point.end (); ++it)
+           it != _point.end (); ++it) {
         obj += it->calc_dist (_centroid[it->id], _opt.dist);
+		   }
       return obj;
     }
     void run () {
