@@ -56,7 +56,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
    as necessary.  Return the number of characters read (not including the
    null terminator), or -1 on error or EOF.  */
 
-int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator, int offset)
+int getstr (char ** lineptr, unsigned long int *n, FILE * stream, char terminator, int offset)
 {
   int nchars_avail;		/* Allocated but unused chars in *LINEPTR.  */
   char *read_pos;		/* Where we're reading into *LINEPTR. */
@@ -124,7 +124,7 @@ int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator, int offs
   return ret;
 }
 
-ssize_t getline(char **lineptr, size_t *n, FILE *stream)
+signed long int getline(char **lineptr, unsigned long int *n, FILE *stream)
 {
   return getstr (lineptr, n, stream, '\n', 0);
 }
@@ -193,11 +193,11 @@ namespace yakmo
 
   typedef double fl_t;
 
-  static inline bool getLine (FILE*& fp, char*& line, size_t& read) {
+  static inline bool getLine (FILE*& fp, char*& line, unsigned long int& read) {
 #ifdef __APPLE__
     if ((line = fgetln (fp, &read)) == NULL) return false;
 #else
-    static ssize_t read_ = 0; static size_t size = 0; // static helps inlining
+    static signed long int read_ = 0; static unsigned long int size = 0; // static helps inlining
     if ((read_ = getline (&line, &size, fp)) == -1) return false;
     read = read_;
 #endif
@@ -206,11 +206,11 @@ namespace yakmo
   }
   static bool isspace (const char p) { return p == ' ' || p == '\t'; }
   template <typename T> T strton (const char* s, char** error) {
-    const ssize_t  ret  =  (ssize_t)  (std::strtoll  (s, error, 10));
-	const size_t retu = (size_t)  (std::strtoull (s, error, 10));
+    const signed long int  ret  =  (signed long int)  (std::strtoll  (s, error, 10));
+	const unsigned long int retu = (unsigned long int)  (std::strtoull (s, error, 10));
     if (std::numeric_limits <T>::is_specialized &&
-        (ret  < static_cast <ssize_t>  (std::numeric_limits <T>::min ()) ||
-         retu > static_cast <size_t> (std::numeric_limits <T>::max ())))
+        (ret  < static_cast <signed long int>  (std::numeric_limits <T>::min ()) ||
+         retu > static_cast <unsigned long int> (std::numeric_limits <T>::max ())))
       errx (1, "overflow: %s", s);
     return static_cast <T> (ret);
   }
@@ -503,10 +503,10 @@ namespace yakmo
       fl_t norm = 0;
       char* p = ex;
       while (p != ex_end) {
-        ssize_t fi = 0;
+        signed long int fi = 0;
         for (; *p >= '0' && *p <= '9'; ++p) {
           fi *= 10, fi += *p, fi -= '0';
-          if (fi > std::numeric_limits <ssize_t>::max ())
+          if (fi > std::numeric_limits <signed long int>::max ())
             errx (1, "overflow: %s", ex);
         }
         if (*p != ':') errx (1, "illegal feature index: %s", ex);
@@ -726,7 +726,7 @@ namespace yakmo
       if (! fp)
         errx (1, "no such file: %s", train);
       char*  line = 0;
-      size_t read = 0;
+      unsigned long int read = 0;
       while (getLine (fp, line, read)) {
         char* ex (line), *ex_end (line + read - 1);
         while (ex != ex_end && ! isspace (*ex)) ++ex;
@@ -806,7 +806,7 @@ namespace yakmo
       if (! fp)
         errx (1, "no such file: %s", model);
       char*  line = 0;
-      size_t read = 0;
+      unsigned long int read = 0;
       if (! getLine (fp, line, read)) errx (1, "premature model: %s", model);
       _opt.m  = static_cast <uint> (std::strtol (line, NULL, 10));
       if (! getLine (fp, line, read)) errx (1, "premature model: %s", model);
@@ -840,7 +840,7 @@ namespace yakmo
       if (! fp)
         errx (1, "no such file: %s", test);
       char*  line = 0;
-      size_t read = 0;
+      unsigned long int read = 0;
       while (getLine (fp, line, read)) {
         char* ex (line), *ex_end (line + read - 1);
         while (ex != ex_end && ! isspace (*ex)) ++ex;
