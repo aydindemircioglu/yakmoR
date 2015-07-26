@@ -354,7 +354,7 @@ namespace yakmo
 			_body[i].val -= c[_body[i].idx] * norm_ip;
 			_norm += _body[i].val * _body[i].val;
         }
-        _norm = floor(_norm * 100000000) / 100000000; 
+        _norm = floor(_norm * 1000000000000) / 1000000000000; 
       }
       const node_t* begin () const { return _body; }
       const node_t* end   () const { return _body + _size; }
