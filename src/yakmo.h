@@ -14,6 +14,7 @@
 #include <limits>
 #include <vector>
 #include <algorithm>
+#include <iomanip>
 
 
 #include <sys/types.h>
@@ -555,7 +556,9 @@ namespace yakmo
 		rng_t (const bool r){}
         
         fl_t operator () () {
-			return R::runif(0,1);
+			fl_t p = R::runif(0,1);
+			std::cout << std::setprecision(17) << p << ", ";
+			return (p);
         }
       } rng (_opt.random);
       //
