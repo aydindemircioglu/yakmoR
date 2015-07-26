@@ -197,10 +197,15 @@ namespace yakmo
   static inline bool getLine (FILE*& fp, char*& line, unsigned long int& read) {
 #ifdef __APPLE__
     if ((line = fgetln (fp, &read)) == NULL) return false;
-#else
+#elif WIN32
+	// problems with 64bit and size_t :/
     static signed long int read_ = 0; static unsigned long int size = 0; // static helps inlining
     if ((read_ = getline (&line, &size, fp)) == -1) return false;
     read = read_;
+#else
+	static signed long int read_ = 0; static size_t size = 0; // static helps inlining
+	if ((read_ = getline (&line, &size, fp)) == -1) return false;
+	read = read_;
 #endif
     *(line + read - 1) = '\0';
     return true;
@@ -518,7 +523,8 @@ namespace yakmo
         while (isspace (*p)) ++p;
       }
       std::sort (tmp.begin (), tmp.end ());
-	  Rcout << std::setprecision(16) << norm << ",";
+	  // this seems completly ok  on win vs linux.
+	  // Rcout << std::setprecision(16) << norm << ",";
 	  if (normalize) { // normalize
         norm = std::sqrt (norm);
         for (std::vector <node_t>::iterator it = tmp.begin ();
