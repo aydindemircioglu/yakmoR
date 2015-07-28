@@ -19,11 +19,12 @@ or by using the K-Means++ scheme.
 To circumvent platform-dependent floating point problems, there are some differences to the original yakmo package:
 
 - The different random number generators are replaced by the R::unif random number generator
-- Compiling is done with the -ffloat-store flag. This prevents having different precision on different platforms (32bit vs 64bit)
 - The projection is rounded to 14 digits precision. 
 
-Therefore the results are not directly comparable to the original yakmo package.
-
+Therefore the results are not directly comparable to the original yakmo package. As the package is also enforced not to use 
+specific C-compiler flags, compiling is NOT done with the -ffloat-store flag. This means now that different precision is used
+on different platforms (32bit vs 64bit, possibly also linux vs windows). So it is not really possible to build platform-independent
+packages using yakmoR. The workaround would be to enable the -ffloat-store flag. If you know a good way around, contact me.
 
 
 
