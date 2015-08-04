@@ -30,4 +30,5 @@ packages using yakmoR. The workaround would be to enable the -ffloat-store flag.
 
 # Changelist
 
+-v0.1.1: fix sun solaris build (32bit)
 -v0.1.0: Initial release.

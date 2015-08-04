@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Removed stupidly included cran-comments.md from the package
+* Fix Sun Solaris build error (can only test 32bit)
 
 
  
