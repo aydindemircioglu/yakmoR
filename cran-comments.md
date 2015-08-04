@@ -1,17 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Converted the DESCRIPTION title to title case.
-
-* Removed the -fflag-store compile flag. 
-
-* Added a very simple unit test to make sure yakmoR works as intended.
-
-* Added a complete sentence to DESCRIPTION meta-information.
-
-* Added the line ending in src/Makevars.
-
-* Replaced the exit calls with Rcpp::stop() 
+* Removed stupidly included cran-comments.md from the package
 
 
  

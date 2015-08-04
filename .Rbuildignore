@@ -27,3 +27,4 @@ testinfo.RData
 ..Rcheck
 R/..Rcheck
 .git
+cran-comments.md
